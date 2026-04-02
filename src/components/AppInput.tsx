@@ -16,10 +16,11 @@ export function AppInput({
   onChangeText,
   className,
   containerClassName,
+  style,
   ...rest
 }: AppInputProps) {
   return (
-    <View className={`flex-col w-full gap-1 ${containerClassName}`}>
+    <View className={`flex-col gap-1 ${containerClassName}`}>
       {label && (
         <Text className="font-montserrat-medium text-brand-primary text-base">
           {label}
@@ -29,7 +30,9 @@ export function AppInput({
       <View className="flex-row items-center bg-white border border-border-gray rounded-2xl px-3">
         <TextInput
           {...rest}
-          className={`flex-1 py-3 font-montserrat placeholder:text-brand-secondary text-brand-primary text-base ${className}`}
+          style={[{ fontFamily: "Montserrat-Regular" }, style]}
+          className={`flex-1 py-3 text-brand-primary text-base ${className}`}
+          placeholderTextColor="#637083"
           placeholder={placeholder}
           value={value}
           onChangeText={onChangeText}

@@ -52,7 +52,7 @@ export default function App() {
       onLayout={onLayoutRootView}
     >
       <NavigationContainer>
-        <StatusBar style="auto" />
+        <StatusBar style="light" />
         <RootStack />
       </NavigationContainer>
     </SafeAreaProvider>
