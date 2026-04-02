@@ -1,0 +1,73 @@
+import React, { useEffect, useRef } from "react";
+import { Text, Pressable, Animated } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+
+interface AppBadgeProps {
+  title: string;
+  isSelected?: boolean;
+  onPress?: () => void;
+  className?: string;
+}
+
+const GRADIENT_COLORS = ["#2ECC71", "#00B4D8"] as const;
+
+export function AppBadge({
+  title,
+  isSelected,
+  onPress,
+  className = "",
+}: AppBadgeProps) {
+  const animatedValue = useRef(new Animated.Value(isSelected ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: isSelected ? 1 : 0,
+      duration: 100, // Velocidade do fade (ms)
+      useNativeDriver: true, // Melhora performance
+    }).start();
+  }, [isSelected]);
+
+  const selectedOpacity = animatedValue;
+
+  const unselectedOpacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className={`overflow-hidden rounded-full bg-bg-light ${className}`}
+      style={{ position: "relative" }}
+    >
+      <Animated.View
+        style={{ opacity: unselectedOpacity }}
+        className="items-center justify-center px-4 py-2"
+      >
+        <Text className="text-brand-primary font-montserrat-medium text-base">
+          {title}
+        </Text>
+      </Animated.View>
+
+      <Animated.View
+        style={{
+          ...StyleSheet.absoluteFillObject,
+          opacity: selectedOpacity,
+        }}
+      >
+        <LinearGradient
+          colors={GRADIENT_COLORS}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className="h-full w-full items-center justify-center px-4 py-2"
+        >
+          <Text className="text-white font-montserrat-medium text-base">
+            {title}
+          </Text>
+        </LinearGradient>
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+import { StyleSheet } from "react-native";
