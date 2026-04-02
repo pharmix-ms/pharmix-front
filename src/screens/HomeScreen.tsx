@@ -1,6 +1,6 @@
 import { View, Text, Pressable } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/RootStack";
+import { RootStackParamList } from "../navigation/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
@@ -11,7 +11,7 @@ export function HomeScreen({ navigation }: Props) {
 
       <Pressable
         className="mt-4 bg-blue-500 px-4 py-2 rounded"
-        onPress={() => navigation.navigate("Profile")}
+        onPress={() => navigation.navigate("BottomTabs")}
       >
         <Text className="text-white">Ir para perfil</Text>
       </Pressable>

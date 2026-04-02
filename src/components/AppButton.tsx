@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { LucideIcon } from "lucide-react-native";
-import MaskedView from "@react-native-masked-view/masked-view";
+import { GradientWrapper } from "../components/GradientWrapper";
 
 interface AppButtonProps {
   title: string;
@@ -29,12 +29,7 @@ export function AppButton({
   isLoading = false,
   className = "",
 }: AppButtonProps) {
-  const iconColor =
-    variant === "primary"
-      ? "#FFF"
-      : variant === "outline"
-        ? "#344051"
-        : "#00B4D8"; // ghost
+  const iconColor = variant === "primary" ? "#FFF" : "#344051";
 
   const content = () => {
     if (isLoading) {
@@ -43,58 +38,42 @@ export function AppButton({
       );
     }
 
-    return (
+    const innerContent = (
       <View className="flex-row items-center justify-center gap-2">
-        {variant === "ghost" ? (
-          <MaskedView
-            maskElement={
-              <Text className="font-montserrat-bold text-lg">{title}</Text>
-            }
-          >
-            <LinearGradient
-              colors={GRADIENT_COLORS}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text className="font-montserrat-bold text-lg opacity-0">
-                {title}
-              </Text>
-            </LinearGradient>
-          </MaskedView>
-        ) : (
-          <Text
-            className={`font-montserrat-bold text-lg ${
-              variant === "primary" ? "text-white" : "text-brand-primary"
-            }`}
-          >
-            {title}
-          </Text>
-        )}
-
+        <Text
+          className={`font-montserrat-bold text-lg ${
+            variant === "primary" ? "text-white" : "text-brand-primary"
+          }`}
+        >
+          {title}
+        </Text>
         {Icon && <Icon size={20} color={iconColor} />}
       </View>
     );
+
+    if (variant === "ghost") {
+      return <GradientWrapper>{innerContent}</GradientWrapper>;
+    }
+
+    return innerContent;
   };
 
-  const baseStyle =
-    "w-full h-14 rounded-2xl flex-row items-center justify-center";
+  const baseStyle = "h-14 rounded-2xl flex-row items-center justify-center";
 
   if (variant === "ghost") {
     return (
       <Pressable
         onPress={onPress}
         disabled={isLoading}
-        style={{
-          ...Platform.select({
-            ios: {
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-            },
-            android: { elevation: 4 },
-          }),
-        }}
+        style={Platform.select({
+          ios: {
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+          },
+          android: { elevation: 4 },
+        })}
         className={`${baseStyle} bg-white active:bg-gray-50 ${className}`}
       >
         {content()}
@@ -123,7 +102,7 @@ export function AppButton({
       <LinearGradient
         colors={GRADIENT_COLORS}
         start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
+        end={{ x: 1, y: 1 }}
         className="h-full w-full flex-row items-center justify-center px-6"
       >
         {content()}
