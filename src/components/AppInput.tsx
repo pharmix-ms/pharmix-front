@@ -16,7 +16,6 @@ export function AppInput({
   onChangeText,
   className,
   containerClassName,
-  style,
   ...rest
 }: AppInputProps) {
   return (
@@ -30,8 +29,8 @@ export function AppInput({
       <View className="flex-row items-center bg-white border border-border-gray rounded-2xl px-3">
         <TextInput
           {...rest}
-          style={[{ fontFamily: "Montserrat-Regular" }, style]}
-          className={`flex-1 py-3 text-brand-primary text-base ${className}`}
+          className={`flex-1 py-3 text-brand-primary text-base ${className ?? ""}`}
+          style={[{ fontFamily: "Montserrat-Regular" }, rest.style]}
           placeholderTextColor="#637083"
           placeholder={placeholder}
           value={value}

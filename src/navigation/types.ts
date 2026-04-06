@@ -6,5 +6,12 @@ export type RootStackParamList = {
 export type BottomTabParamList = {
   Profile: undefined;
   History: undefined;
+  MedicineStack: undefined;
+};
+
+export type MedicineStackParamList = {
   Medicine: undefined;
+  Confirm: undefined;
+  Result: undefined;
+  Details: { interactionId?: string };
 };

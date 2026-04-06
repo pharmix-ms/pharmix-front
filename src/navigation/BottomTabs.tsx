@@ -2,11 +2,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomTabParamList } from "./types";
 import { ProfileScreen } from "../screens/ProfileScreen";
 import { HistoryScreen } from "../screens/HistoryScreen";
-import { MedicineScreen } from "../screens/MedicineScreen";
 import { History, House, User } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GradientWrapper } from "../components/GradientWrapper";
 import { Text } from "react-native";
+import { MedicineStack } from "./MedicineStack";
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -34,7 +34,7 @@ export function BottomTabs() {
           let IconComponent;
           if (route.name === "Profile")
             IconComponent = <User size={28} color={color} />;
-          else if (route.name === "Medicine")
+          else if (route.name === "MedicineStack")
             IconComponent = <House size={28} color={color} />;
           else IconComponent = <History size={28} color={color} />;
 
@@ -70,8 +70,8 @@ export function BottomTabs() {
         options={{ title: "Perfil" }}
       />
       <Tab.Screen
-        name="Medicine"
-        component={MedicineScreen}
+        name="MedicineStack"
+        component={MedicineStack}
         options={{ title: "Início" }}
       />
       <Tab.Screen
