@@ -21,7 +21,7 @@ export function AppMedicineItem({
         <GradientWrapper>
           <Pill size={24} />
         </GradientWrapper>
-        <View>
+        <View className="flex-1">
           <Text className="font-montserrat-medium text-brand-primary">
             {name}
           </Text>
