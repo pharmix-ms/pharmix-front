@@ -101,7 +101,7 @@ export function MedicineScreen({ navigation }: Props) {
         <Text className="font-montserrat-bold text-brand-primary text-lg">
           Medicamentos Adicionados
         </Text>
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps="handled">
           <View className="gap-3">
             {selectedMedicines.length === 0 ? (
               <View className="justify-center items-center bg-bg-info rounded-2xl border-2 border-primary border-dashed py-9 gap-2">

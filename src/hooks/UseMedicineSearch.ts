@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export interface Medicine {
   id: string;
@@ -7,21 +7,21 @@ export interface Medicine {
   quantity: string;
 }
 
-// Adapte essa função para a sua API real
-async function fetchMedicines(query: string): Promise<Medicine[]> {
+async function fetchMedicines(
+  query: string,
+  signal: AbortSignal,
+): Promise<Medicine[]> {
   if (!query || query.length < 2) return [];
 
-  // Exemplo com a API Open FDA (gratuita, sem auth)
-  // Troque pela sua API conforme necessário
-  const url = `https://api.fda.gov/drug/label.json?search=openfda.generic_name:"${encodeURIComponent(query)}"&limit=8`;
+  const url = `https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${encodeURIComponent(query)}"&limit=8`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, { signal }); // ← passa o signal
   if (!response.ok) return [];
 
   const data = await response.json();
 
   return (data.results ?? []).map((item: any, index: number) => ({
-    id: item.id ?? `${query}-${index}`,
+    id: item.set_id ?? `${query}-${index}`, // ← set_id é o campo correto da FDA
     name: item.openfda?.brand_name?.[0] ?? "Desconhecido",
     type: item.openfda?.dosage_form?.[0] ?? "Não informado",
     quantity:
@@ -37,39 +37,52 @@ export function useMedicineSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMedicines, setSelectedMedicines] = useState<Medicine[]>([]);
 
-  // Debounce: aguarda 400ms após o usuário parar de digitar
+  // Ref para acessar selectedMedicines dentro do efeito sem adicioná-lo
+  // às dependências (evita re-execuções desnecessárias ao adicionar/remover)
+  const selectedRef = useRef(selectedMedicines);
+  useEffect(() => {
+    selectedRef.current = selectedMedicines;
+  }, [selectedMedicines]);
+
   useEffect(() => {
     if (!query || query.length < 2) {
       setSuggestions([]);
       return;
     }
 
+    // Cada ciclo do efeito cria seu próprio controller
+    const controller = new AbortController();
+
     const timer = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const results = await fetchMedicines(query);
-        // Filtra os que já foram adicionados
+        const results = await fetchMedicines(query, controller.signal);
         const filtered = results.filter(
-          (m) => !selectedMedicines.some((s) => s.id === m.id),
+          (m) => !selectedRef.current.some((s) => s.id === m.id),
         );
         setSuggestions(filtered);
-      } catch {
-        setSuggestions([]);
+      } catch (err: any) {
+        // Ignora erros de abort (request cancelada intencionalmente)
+        if (err.name !== "AbortError") {
+          setSuggestions([]);
+        }
       } finally {
         setIsLoading(false);
       }
     }, 400);
 
-    return () => clearTimeout(timer);
-  }, [query, selectedMedicines]);
+    // Cancela tanto o timer quanto a request em andamento
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]); // ← selectedMedicines removido daqui
 
   const addMedicine = useCallback((medicine: Medicine) => {
     setSelectedMedicines((prev) => {
-      // Evita duplicatas
       if (prev.some((m) => m.id === medicine.id)) return prev;
       return [...prev, medicine];
     });
-    // Limpa o campo e o dropdown após adicionar
     setQuery("");
     setSuggestions([]);
   }, []);
