@@ -241,12 +241,12 @@ export function ProfileScreen({ navigation }: Props) {
             title="Pular"
             variant="outline"
             className="flex-1"
-            onPress={() => navigation.navigate("Medicine")}
+            onPress={() => navigation.navigate("MedicineStack")}
           />
 
           <AppButton
             title="Continuar"
-            onPress={() => navigation.navigate("Medicine")}
+            onPress={() => navigation.navigate("MedicineStack")}
             icon={ChevronRight}
             className="flex-1"
           />

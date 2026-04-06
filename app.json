@@ -29,6 +29,19 @@
       },
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font"]
+    "assetBundlePatterns": ["./assets/fonts/*"],
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Montserrat-Regular.ttf",
+            "./assets/fonts/Montserrat-Bold.ttf",
+            "./assets/fonts/Montserrat-Medium.ttf",
+            "./assets/fonts/Montserrat-SemiBold.ttf"
+          ]
+        }
+      ]
+    ]
   }
 }

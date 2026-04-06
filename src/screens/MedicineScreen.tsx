@@ -1,8 +1,10 @@
-import { View, Text } from "react-native";
+import { View, Text, TextInput } from "react-native";
 import { BottomTabParamList } from "../navigation/types";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AppInput } from "../components/AppInput";
+import { Search } from "lucide-react-native";
 
 type Props = BottomTabScreenProps<BottomTabParamList, "Medicine">;
 
@@ -25,7 +27,9 @@ export function MedicineScreen({ navigation }: Props) {
           Adicione os medicamentos e analise suas interações.
         </Text>
       </LinearGradient>
-      <View className="flex-1 p-5 bg-bg-light gap-3"></View>
+      <View className="flex-1 p-5 bg-bg-light gap-3">
+        <AppInput placeholder="Buscar medicamento" icon={Search} />
+      </View>
     </View>
   );
 }

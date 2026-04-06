@@ -7,6 +7,12 @@ module.exports = {
   ],
   presets: [require("nativewind/preset")],
   theme: {
+    fontFamily: {
+      montserrat: ["Montserrat-Regular"],
+      "montserrat-bold": ["Montserrat-Bold"],
+      "montserrat-medium": ["Montserrat-Medium"],
+      "montserrat-semibold": ["Montserrat-SemiBold"],
+    },
     extend: {
       colors: {
         // Gerais
@@ -39,12 +45,6 @@ module.exports = {
           info: "rgba(0, 180, 216, 0.1)", // #00B4D8 com 10% de opacidade
           warning: "rgba(254, 206, 169, 0.1)", // #FECEA9 com 10% de opacidade
         },
-      },
-      fontFamily: {
-        montserrat: ["Montserrat-Regular"],
-        "montserrat-bold": ["Montserrat-Bold"],
-        "montserrat-medium": ["Montserrat-Medium"],
-        "montserrat-semibold": ["Montserrat-SemiBold"],
       },
     },
   },
