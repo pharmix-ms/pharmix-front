@@ -12,6 +12,6 @@ export type BottomTabParamList = {
 export type MedicineStackParamList = {
   Medicine: undefined;
   Confirm: undefined;
-  Result: undefined;
-  Details: { interactionId?: string };
+  Result: { status: "safe" | "warning" | "danger" };
+  Details: { status: "safe" | "warning" | "danger" };
 };

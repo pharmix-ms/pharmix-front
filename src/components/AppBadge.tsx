@@ -1,73 +1,36 @@
-import React, { useEffect, useRef } from "react";
-import { Text, Pressable, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
+import { Text, View } from "react-native";
 
 interface AppBadgeProps {
-  title: string;
-  isSelected?: boolean;
-  onPress?: () => void;
-  className?: string;
+  variant: keyof typeof badgeText;
 }
 
-const GRADIENT_COLORS = ["#2ECC71", "#00B4D8"] as const;
+const badgeText = {
+  seguro: "Seguro",
+  atencao: "Atenção",
+  perigoso: "Perigoso",
+};
 
-export function AppBadge({
-  title,
-  isSelected,
-  onPress,
-  className = "",
-}: AppBadgeProps) {
-  const animatedValue = useRef(new Animated.Value(isSelected ? 1 : 0)).current;
+const badgeBg = {
+  seguro: ["#2ECC71", "#2EB88A"],
+  atencao: ["#F4A261", "#FF8000"],
+  perigoso: ["#FF6346", "#E63946"],
+} as const;
 
-  useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isSelected ? 1 : 0,
-      duration: 100, // Velocidade do fade (ms)
-      useNativeDriver: true, // Melhora performance
-    }).start();
-  }, [isSelected]);
-
-  const selectedOpacity = animatedValue;
-
-  const unselectedOpacity = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0],
-  });
-
+export function AppBadge({ variant }: AppBadgeProps) {
   return (
-    <Pressable
-      onPress={onPress}
-      className={`overflow-hidden rounded-full bg-bg-light ${className}`}
-      style={{ position: "relative" }}
-    >
-      <Animated.View
-        style={{ opacity: unselectedOpacity }}
-        className="items-center justify-center px-4 py-2"
+    <View className="overflow-hidden rounded-full">
+      <LinearGradient
+        colors={badgeBg[variant]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        className="justify-center items-center"
       >
-        <Text className="text-brand-primary font-montserrat-medium text-base">
-          {title}
+        <Text className="font-montserrat-semibold text-white text-center px-4 py-1">
+          {badgeText[variant]}
         </Text>
-      </Animated.View>
-
-      <Animated.View
-        style={{
-          ...StyleSheet.absoluteFillObject,
-          opacity: selectedOpacity,
-        }}
-      >
-        <LinearGradient
-          colors={GRADIENT_COLORS}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          className="h-full w-full items-center justify-center px-4 py-2"
-        >
-          <Text className="text-white font-montserrat-medium text-base">
-            {title}
-          </Text>
-        </LinearGradient>
-      </Animated.View>
-    </Pressable>
+      </LinearGradient>
+    </View>
   );
 }
-
-import { StyleSheet } from "react-native";

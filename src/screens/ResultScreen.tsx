@@ -3,29 +3,81 @@ import { MedicineStackParamList } from "../navigation/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import {
+  AlertTriangle,
+  CheckCircle,
+  ClipboardList,
+  RotateCcw,
+  XCircle,
+} from "lucide-react-native";
+import { AppButton } from "../components/AppButton";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Result">;
 
-export function ResultScreen({ navigation }: Props) {
+const STATUS_CONFIG = {
+  safe: {
+    label: "Combinação Segura",
+    description:
+      "Nenhuma interação perigosa foi encontrada entre os medicamentos selecionados.",
+    colors: ["#2ECC71", "#2EB88A"] as const,
+    icon: CheckCircle,
+    iconColor: "#2ECC71",
+  },
+  warning: {
+    label: "Requer Atenção",
+    description: "Foram encontradas possíveis interações que requerem cuidado.",
+    colors: ["#F4A261", "#FF8000"] as const,
+    icon: AlertTriangle,
+    iconColor: "#F4A261",
+  },
+  danger: {
+    label: "Combinação Perigosa",
+    description:
+      "Interações perigosas detectadas. Consulte um médico antes de usar.",
+    colors: ["#FF6346", "#E63946"] as const,
+    icon: XCircle,
+    iconColor: "#E63946",
+  },
+};
+
+export function ResultScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
+  // useHideTabBar();
+  const { status } = route.params;
+
+  const config = STATUS_CONFIG[status];
 
   return (
     <View className="flex-1">
       <LinearGradient
-        colors={["#00B4D8", "#2ECC71"]}
+        colors={config.colors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{ padding: 25, paddingTop: 25 + insets.top }}
         className="gap-2"
       >
+        <config.icon size={62} color={"#FFFFFF"} />
         <Text className="font-montserrat-bold text-white text-2xl">
-          Meus Medicamentos
+          {config.label}
         </Text>
         <Text className="font-montserrat text-white text-base">
-          Adicione os medicamentos e analise suas interações.
+          {config.description}
         </Text>
       </LinearGradient>
-      <View className="flex-1 p-5 bg-bg-light gap-3"></View>
+      <View className="flex-1 p-5 bg-bg-light gap-3">
+        <AppButton
+          title="Nova Análise"
+          variant="outline"
+          onPress={() => navigation.popToTop()}
+          icon={RotateCcw}
+        />
+        <AppButton
+          title="Ver detalhes completos"
+          onPress={() => navigation.navigate("Details", { status })}
+          icon={ClipboardList}
+          gradientColors={config.colors}
+        />
+      </View>
     </View>
   );
 }

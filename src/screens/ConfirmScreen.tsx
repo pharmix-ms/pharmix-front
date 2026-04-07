@@ -3,11 +3,19 @@ import { MedicineStackParamList } from "../navigation/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AppButton } from "../components/AppButton";
+import { Check, Microscope } from "lucide-react-native";
+import { GradientWrapper } from "../components/GradientWrapper";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Confirm">;
 
 export function ConfirmScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+
+  function getRandomStatus(): "safe" | "warning" | "danger" {
+    const options = ["safe", "warning", "danger"] as const;
+    return options[Math.floor(Math.random() * options.length)];
+  }
 
   return (
     <View className="flex-1">
@@ -29,6 +37,45 @@ export function ConfirmScreen({ navigation }: Props) {
         <Text className="font-montserrat-bold text-brand-primary text-lg">
           Medicamentos Adicionados
         </Text>
+        <View className="flex-row items-center bg-white rounded-2xl border border-border-gray px-4 py-3">
+          <View className="flex-1 flex-row items-center gap-4">
+            <GradientWrapper>
+              <Text className="font-montserrat-medium text-xl w-6 text-center">
+                1
+              </Text>
+            </GradientWrapper>
+            <View className="flex-1">
+              <Text className="font-montserrat-medium text-brand-primary">
+                Losartana
+              </Text>
+              <Text className="font-montserrat-medium text-brand-secondary">
+                Anti-hipertensivo - 50mg
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View className="border bg-bg-warning border-warning rounded-2xl gap-4 flex-row items-center px-4 py-3">
+          <Microscope size={24} color={"#F4A261"} />
+          <Text className="font-montserrat-semibold text-warning flex-1">
+            Nossa análise verifica interações conhecidas entre esses medicamenos
+            com base em bancos de dados farmacológicas. Sempre consulte um
+            farmacêutico para orientação personalizada.
+          </Text>
+        </View>
+        <AppButton
+          title="Confirmar Análise"
+          onPress={() =>
+            navigation.navigate("Result", {
+              status: getRandomStatus(), // ← mock, depois vira resposta da API
+            })
+          }
+          icon={Check}
+        />
+        <AppButton
+          title="Voltar"
+          variant="outline"
+          onPress={() => navigation.goBack()}
+        />
       </View>
     </View>
   );
