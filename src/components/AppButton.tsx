@@ -17,9 +17,10 @@ interface AppButtonProps {
   icon?: LucideIcon;
   isLoading?: boolean;
   className?: string;
+  gradientColors?: readonly [string, string];
 }
 
-const GRADIENT_COLORS = ["#2ECC71", "#00B4D8"] as const;
+const DEFAULT_GRADIENT_COLORS = ["#2ECC71", "#00B4D8"] as const;
 
 export function AppButton({
   title,
@@ -28,6 +29,7 @@ export function AppButton({
   icon: Icon,
   isLoading = false,
   className = "",
+  gradientColors = DEFAULT_GRADIENT_COLORS,
 }: AppButtonProps) {
   const iconColor = variant === "primary" ? "#FFF" : "#344051";
 
@@ -41,9 +43,10 @@ export function AppButton({
     const innerContent = (
       <View className="flex-row items-center justify-center gap-2">
         <Text
-          className={`font-montserrat-bold text-lg ${
+          className={`font-montserrat-bold text-lg shrink ${
             variant === "primary" ? "text-white" : "text-brand-primary"
           }`}
+          numberOfLines={1}
         >
           {title}
         </Text>
@@ -100,7 +103,7 @@ export function AppButton({
       className={`${baseStyle} overflow-hidden active:opacity-90 ${className}`}
     >
       <LinearGradient
-        colors={GRADIENT_COLORS}
+        colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         className="h-full w-full flex-row items-center justify-center px-6"

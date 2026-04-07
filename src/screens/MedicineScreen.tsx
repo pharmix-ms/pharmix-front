@@ -31,7 +31,7 @@ export function MedicineScreen({ navigation }: Props) {
     selectedMedicines,
     addMedicine,
     removeMedicine,
-    canAnalyze,
+    // canAnalyze,
   } = useMedicineSearch();
 
   return (
@@ -101,7 +101,10 @@ export function MedicineScreen({ navigation }: Props) {
         <Text className="font-montserrat-bold text-brand-primary text-lg">
           Medicamentos Adicionados
         </Text>
-        <ScrollView keyboardShouldPersistTaps="handled">
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <View className="gap-3">
             {selectedMedicines.length === 0 ? (
               <View className="justify-center items-center bg-bg-info rounded-2xl border-2 border-primary border-dashed py-9 gap-2">
@@ -136,9 +139,7 @@ export function MedicineScreen({ navigation }: Props) {
             </View>
             <AppButton
               title="Analisar Combinação"
-              onPress={() =>
-                navigation.navigate("Confirm", { medicines: selectedMedicines })
-              }
+              onPress={() => navigation.navigate("Confirm")}
               icon={Scan}
               className="flex-1"
             />
