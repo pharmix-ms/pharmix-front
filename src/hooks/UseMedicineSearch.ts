@@ -1,34 +1,36 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
 export interface Medicine {
-  id: string;
   name: string;
-  type: string;
-  quantity: string;
+  type: string; // princípio ativo
 }
 
 async function fetchMedicines(
   query: string,
   signal: AbortSignal,
 ): Promise<Medicine[]> {
-  if (!query || query.length < 2) return [];
+  if (!query || query.trim().length < 2) return [];
 
-  const url = `https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${encodeURIComponent(query)}"&limit=8`;
+  const url = `https://api-medicamentos-anvisa.vercel.app/${encodeURIComponent(
+    query.trim(),
+  )}?limit=8`;
 
-  const response = await fetch(url, { signal }); // ← passa o signal
+  const response = await fetch(url, { signal });
+
   if (!response.ok) return [];
 
   const data = await response.json();
 
-  return (data.results ?? []).map((item: any, index: number) => ({
-    id: item.set_id ?? `${query}-${index}`, // ← set_id é o campo correto da FDA
-    name: item.openfda?.brand_name?.[0] ?? "Desconhecido",
-    type: item.openfda?.dosage_form?.[0] ?? "Não informado",
-    quantity:
-      item.openfda?.strength?.[0] ??
-      item.dosage_and_administration?.[0]?.slice(0, 30) ??
-      "Não informado",
+  if (!Array.isArray(data)) return [];
+
+  return data.map((item: any) => ({
+    name: item?.NOME_PRODUTO ?? "Desconhecido",
+    type: item?.PRINCIPIO_ATIVO ?? "Não informado",
   }));
+}
+
+function medicineKey(medicine: Medicine) {
+  return `${medicine.name}__${medicine.type}`.toLowerCase();
 }
 
 export function useMedicineSearch() {
@@ -37,33 +39,35 @@ export function useMedicineSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMedicines, setSelectedMedicines] = useState<Medicine[]>([]);
 
-  // Ref para acessar selectedMedicines dentro do efeito sem adicioná-lo
-  // às dependências (evita re-execuções desnecessárias ao adicionar/remover)
   const selectedRef = useRef(selectedMedicines);
+
   useEffect(() => {
     selectedRef.current = selectedMedicines;
   }, [selectedMedicines]);
 
   useEffect(() => {
-    if (!query || query.length < 2) {
+    if (!query || query.trim().length < 2) {
       setSuggestions([]);
+      setIsLoading(false);
       return;
     }
 
-    // Cada ciclo do efeito cria seu próprio controller
     const controller = new AbortController();
 
     const timer = setTimeout(async () => {
       setIsLoading(true);
+
       try {
         const results = await fetchMedicines(query, controller.signal);
+
         const filtered = results.filter(
-          (m) => !selectedRef.current.some((s) => s.id === m.id),
+          (m) =>
+            !selectedRef.current.some((s) => medicineKey(s) === medicineKey(m)),
         );
+
         setSuggestions(filtered);
       } catch (err: any) {
-        // Ignora erros de abort (request cancelada intencionalmente)
-        if (err.name !== "AbortError") {
+        if (err?.name !== "AbortError") {
           setSuggestions([]);
         }
       } finally {
@@ -71,24 +75,28 @@ export function useMedicineSearch() {
       }
     }, 400);
 
-    // Cancela tanto o timer quanto a request em andamento
     return () => {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query]); // ← selectedMedicines removido daqui
+  }, [query]);
 
   const addMedicine = useCallback((medicine: Medicine) => {
     setSelectedMedicines((prev) => {
-      if (prev.some((m) => m.id === medicine.id)) return prev;
+      if (prev.some((m) => medicineKey(m) === medicineKey(medicine))) {
+        return prev;
+      }
       return [...prev, medicine];
     });
+
     setQuery("");
     setSuggestions([]);
   }, []);
 
-  const removeMedicine = useCallback((id: string) => {
-    setSelectedMedicines((prev) => prev.filter((m) => m.id !== id));
+  const removeMedicine = useCallback((medicine: Medicine) => {
+    setSelectedMedicines((prev) =>
+      prev.filter((m) => medicineKey(m) !== medicineKey(medicine)),
+    );
   }, []);
 
   return {
