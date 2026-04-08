@@ -1,15 +1,19 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Pressable, Animated } from "react-native";
 import { AppSelect } from "../components/AppSelect";
 import { AppInput } from "../components/AppInput";
 import { AppSwitch } from "../components/AppSwitch";
 import { AppButton } from "../components/AppButton";
 import { ChevronRight } from "lucide-react-native";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { AppInputBadge } from "../components/AppInputBadge";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { BottomTabParamList } from "../navigation/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import {
+  healthConditionCategories,
+  drugAllergyCategories,
+} from "../data/healthData";
 
 type Props = BottomTabScreenProps<BottomTabParamList, "Profile">;
 
@@ -20,6 +24,43 @@ export function ProfileScreen({ navigation }: Props) {
 
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
+
+  const [expandedConditions, setExpandedConditions] = useState(false);
+  const [expandedAllergies, setExpandedAllergies] = useState(false);
+
+  const [selectedConditionCategory, setSelectedConditionCategory] = useState(
+    healthConditionCategories[0].label,
+  );
+  const [selectedAllergyCategory, setSelectedAllergyCategory] = useState(
+    drugAllergyCategories[0].label,
+  );
+
+  const conditionsRotation = useRef(new Animated.Value(0)).current;
+  const allergiesRotation = useRef(new Animated.Value(0)).current;
+
+  const currentConditionItems =
+    healthConditionCategories.find(
+      (category) => category.label === selectedConditionCategory,
+    )?.items ?? [];
+
+  const currentAllergyItems =
+    drugAllergyCategories.find(
+      (category) => category.label === selectedAllergyCategory,
+    )?.items ?? [];
+
+  const toggleAccordion = (
+    expanded: boolean,
+    setExpanded: React.Dispatch<React.SetStateAction<boolean>>,
+    animatedValue: Animated.Value,
+  ) => {
+    const nextValue = !expanded;
+    setExpanded(nextValue);
+    Animated.timing(animatedValue, {
+      toValue: nextValue ? 1 : 0,
+      duration: 250,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const toggleSelection = (
     name: string,
@@ -85,162 +126,245 @@ export function ProfileScreen({ navigation }: Props) {
               value={isNotificationsEnabled}
               onValueChange={setIsNotificationsEnabled}
             />
-            <View className="w-full gap-1 mb-2">
-              <Text className="font-montserrat-medium text-brand-primary text-base">
-                Condições de saúde
-              </Text>
-              <View className="w-full flex-row flex-wrap gap-2 p-2 bg-white border border-border-gray rounded-2xl">
-                <AppInputBadge
-                  title="Diabetes"
-                  isSelected={selectedConditions.includes("Diabetes")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Diabetes",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Hipertensão"
-                  isSelected={selectedConditions.includes("Hipertensao")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Hipertensao",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Asma"
-                  isSelected={selectedConditions.includes("Asma")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Asma",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Gastrite"
-                  isSelected={selectedConditions.includes("Gastrite")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Gastrite",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Depressão"
-                  isSelected={selectedConditions.includes("Depressao")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Depressao",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Ansiedade"
-                  isSelected={selectedConditions.includes("Ansiedade")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Ansiedade",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Tireoide"
-                  isSelected={selectedConditions.includes("Tireoide")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Tireoide",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Colesterol alto"
-                  isSelected={selectedConditions.includes("ColesterolAlto")}
-                  onPress={() =>
-                    toggleSelection(
-                      "ColesterolAlto",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-              </View>
+            <View className="w-full gap-3 mb-2">
+              <Pressable
+                onPress={() =>
+                  toggleAccordion(
+                    expandedConditions,
+                    setExpandedConditions,
+                    conditionsRotation,
+                  )
+                }
+                className="w-full flex-row items-center justify-between rounded-2xl bg-white border border-border-gray px-4 py-4"
+              >
+                <View>
+                  <Text className="font-montserrat-medium text-brand-primary text-base">
+                    Condições de saúde
+                  </Text>
+                  <Text className="font-montserrat text-gray-500 text-xs mt-1">
+                    {selectedConditions.length} selecionada{selectedConditions.length !== 1 ? "s" : ""}
+                  </Text>
+                </View>
+                <Animated.View
+                  style={{
+                    transform: [
+                      {
+                        rotate: conditionsRotation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ["0deg", "90deg"],
+                        }),
+                      },
+                    ],
+                  }}
+                >
+                  <ChevronRight size={24} color="#00B4D8" />
+                </Animated.View>
+              </Pressable>
+
+              {expandedConditions && (
+                <View className="w-full rounded-3xl bg-white border border-border-gray p-3 shadow-sm">
+                  <View className="rounded-2xl bg-bg-light p-3 mb-3">
+                    <Text className="font-montserrat-medium text-brand-primary text-sm mb-2">
+                      Categorias
+                    </Text>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                    >
+                      <View className="flex-row gap-2">
+                        {healthConditionCategories.map((category) => (
+                          <Pressable
+                            key={category.label}
+                            onPress={() => setSelectedConditionCategory(category.label)}
+                            className={`rounded-full px-4 py-2 min-w-[120px] items-center justify-center ${
+                              selectedConditionCategory === category.label
+                                ? "bg-brand-primary"
+                                : "bg-white border border-border-gray"
+                            }`}
+                          >
+                            <Text
+                              className={`font-montserrat-medium text-sm text-center ${
+                                selectedConditionCategory === category.label
+                                  ? "text-white"
+                                  : "text-brand-primary"
+                              }`}
+                            >
+                              {category.label}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </ScrollView>
+                  </View>
+
+                  <View className="rounded-2xl bg-white p-3">
+                    <Text className="font-montserrat-medium text-brand-primary text-sm mb-3">
+                      Itens da categoria {selectedConditionCategory}
+                    </Text>
+                    <View className="flex-row flex-wrap gap-2">
+                      {currentConditionItems.map((condition) => (
+                        <View key={condition} className="min-w-[110px]">
+                          <AppInputBadge
+                            title={condition}
+                            isSelected={selectedConditions.includes(condition)}
+                            onPress={() =>
+                              toggleSelection(
+                                condition,
+                                selectedConditions,
+                                setSelectedConditions,
+                              )
+                            }
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              {selectedConditions.length > 0 && (
+                <View className="w-full rounded-2xl bg-white border border-border-gray p-3">
+                  <Text className="font-montserrat-medium text-brand-primary text-xs mb-2">
+                    Selecionadas
+                  </Text>
+                  <View className="flex-row flex-wrap gap-2">
+                    {selectedConditions.map((condition) => (
+                      <AppInputBadge
+                        key={`selected-${condition}`}
+                        title={condition}
+                        isSelected={true}
+                        onPress={() =>
+                          toggleSelection(
+                            condition,
+                            selectedConditions,
+                            setSelectedConditions,
+                          )
+                        }
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
             </View>
-            <View className="w-full gap-1 mb-2">
-              <Text className="font-montserrat-medium text-brand-primary text-base">
-                Alergias a medicamentos
-              </Text>
-              <View className="w-full flex-row flex-wrap gap-2 p-2 bg-white border border-border-gray rounded-2xl">
-                <AppInputBadge
-                  title="Dipirona"
-                  isSelected={selectedAllergies.includes("Dipirona")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Dipirona",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Penicilina"
-                  isSelected={selectedAllergies.includes("Penicilina")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Penicilina",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="AAS"
-                  isSelected={selectedAllergies.includes("AAS")}
-                  onPress={() =>
-                    toggleSelection(
-                      "AAS",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Sulfa"
-                  isSelected={selectedAllergies.includes("Sulfa")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Sulfa",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Ibuprofeno"
-                  isSelected={selectedAllergies.includes("Ibuprofeno")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Ibuprofeno",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-              </View>
+            <View className="w-full gap-3 mb-2">
+              <Pressable
+                onPress={() =>
+                  toggleAccordion(
+                    expandedAllergies,
+                    setExpandedAllergies,
+                    allergiesRotation,
+                  )
+                }
+                className="w-full flex-row items-center justify-between rounded-2xl bg-white border border-border-gray px-4 py-4"
+              >
+                <View>
+                  <Text className="font-montserrat-medium text-brand-primary text-base">
+                    Alergias a medicamentos
+                  </Text>
+                  <Text className="font-montserrat text-gray-500 text-xs mt-1">
+                    {selectedAllergies.length} selecionada{selectedAllergies.length !== 1 ? "s" : ""}
+                  </Text>
+                </View>
+                <Animated.View
+                  style={{
+                    transform: [
+                      {
+                        rotate: allergiesRotation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ["0deg", "90deg"],
+                        }),
+                      },
+                    ],
+                  }}
+                >
+                  <ChevronRight size={24} color="#00B4D8" />
+                </Animated.View>
+              </Pressable>
+
+              {expandedAllergies && (
+                <View className="w-full rounded-3xl bg-white border border-border-gray p-3 shadow-sm">
+                  <View className="rounded-2xl bg-bg-light p-3 mb-3">
+                    <Text className="font-montserrat-medium text-brand-primary text-sm mb-2">
+                      Categorias
+                    </Text>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                    >
+                      <View className="flex-row gap-2">
+                        {drugAllergyCategories.map((category) => (
+                          <Pressable
+                            key={category.label}
+                            onPress={() => setSelectedAllergyCategory(category.label)}
+                            className={`rounded-full px-4 py-2 min-w-[120px] items-center justify-center ${
+                              selectedAllergyCategory === category.label
+                                ? "bg-brand-primary"
+                                : "bg-white border border-border-gray"
+                            }`}
+                          >
+                            <Text
+                              className={`font-montserrat-medium text-sm text-center ${
+                                selectedAllergyCategory === category.label
+                                  ? "text-white"
+                                  : "text-brand-primary"
+                              }`}
+                            >
+                              {category.label}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </ScrollView>
+                  </View>
+
+                  <View className="rounded-2xl bg-white p-3">
+                    <Text className="font-montserrat-medium text-brand-primary text-sm mb-3">
+                      Itens da categoria {selectedAllergyCategory}
+                    </Text>
+                    <View className="flex-row flex-wrap gap-2">
+                      {currentAllergyItems.map((allergy) => (
+                        <View key={allergy} className="min-w-[110px]">
+                          <AppInputBadge
+                            title={allergy}
+                            isSelected={selectedAllergies.includes(allergy)}
+                            onPress={() =>
+                              toggleSelection(
+                                allergy,
+                                selectedAllergies,
+                                setSelectedAllergies,
+                              )
+                            }
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              {selectedAllergies.length > 0 && (
+                <View className="w-full rounded-2xl bg-white border border-border-gray p-3">
+                  <Text className="font-montserrat-medium text-brand-primary text-xs mb-2">
+                    Selecionadas
+                  </Text>
+                  <View className="flex-row flex-wrap gap-2">
+                    {selectedAllergies.map((allergy) => (
+                      <AppInputBadge
+                        key={`selected-${allergy}`}
+                        title={allergy}
+                        isSelected={true}
+                        onPress={() =>
+                          toggleSelection(
+                            allergy,
+                            selectedAllergies,
+                            setSelectedAllergies,
+                          )
+                        }
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -255,7 +379,6 @@ export function ProfileScreen({ navigation }: Props) {
           <AppButton
             title="Continuar"
             onPress={() => navigation.navigate("MedicineStack")}
-            icon={ChevronRight}
             className="flex-1"
           />
         </View>
