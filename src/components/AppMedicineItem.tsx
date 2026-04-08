@@ -5,14 +5,12 @@ import { GradientWrapper } from "./GradientWrapper";
 interface AppMedicineItemProps {
   name: string;
   type: string;
-  quantity: string;
   onRemove: () => void;
 }
 
 export function AppMedicineItem({
   name,
   type,
-  quantity,
   onRemove,
 }: AppMedicineItemProps) {
   return (
@@ -21,15 +19,17 @@ export function AppMedicineItem({
         <GradientWrapper>
           <Pill size={24} />
         </GradientWrapper>
+
         <View className="flex-1">
           <Text className="font-montserrat-medium text-brand-primary">
             {name}
           </Text>
           <Text className="font-montserrat-medium text-brand-secondary">
-            {type} - {quantity}
+            {type}
           </Text>
         </View>
       </View>
+
       <Pressable onPress={onRemove}>
         <CircleX size={24} color={"#E63946"} />
       </Pressable>

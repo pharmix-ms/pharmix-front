@@ -18,6 +18,7 @@ interface AppButtonProps {
   isLoading?: boolean;
   className?: string;
   gradientColors?: readonly [string, string];
+  disabled?: boolean;
 }
 
 const DEFAULT_GRADIENT_COLORS = ["#2ECC71", "#00B4D8"] as const;
@@ -30,6 +31,7 @@ export function AppButton({
   isLoading = false,
   className = "",
   gradientColors = DEFAULT_GRADIENT_COLORS,
+  disabled = false,
 }: AppButtonProps) {
   const iconColor = variant === "primary" ? "#FFF" : "#344051";
 
@@ -67,7 +69,7 @@ export function AppButton({
     return (
       <Pressable
         onPress={onPress}
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         style={Platform.select({
           ios: {
             shadowColor: "#000",
@@ -88,7 +90,7 @@ export function AppButton({
     return (
       <Pressable
         onPress={onPress}
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         className={`${baseStyle} border border-border-darkGray bg-white active:bg-light ${className}`}
       >
         {content()}
@@ -99,8 +101,10 @@ export function AppButton({
   return (
     <Pressable
       onPress={onPress}
-      disabled={isLoading}
-      className={`${baseStyle} overflow-hidden active:opacity-90 ${className}`}
+      disabled={isLoading || disabled}
+      className={`${baseStyle} overflow-hidden ${
+        disabled ? "opacity-50" : "active:opacity-90"
+      } ${className}`}
     >
       <LinearGradient
         colors={gradientColors}
