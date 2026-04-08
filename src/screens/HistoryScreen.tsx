@@ -2,6 +2,7 @@ import { View, Text, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppHistoryItem } from "../components/AppHistoryItem";
+import { Clock2 } from "lucide-react-native";
 
 export function HistoryScreen() {
   const insets = useSafeAreaInsets();
@@ -9,14 +10,14 @@ export function HistoryScreen() {
   return (
     <View className="flex-1">
       <LinearGradient
-        // colors={["#339CFF", "#006AFF"]}
-        colors={["#00B4D8", "#2ECC71"]}
+        colors={["#339CFF", "#006AFF"]}
+        // colors={["#00B4D8", "#2ECC71"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{ padding: 25, paddingTop: 25 + insets.top }}
         className="gap-2"
       >
-        {/* <Clock2 size={62} color={"#FFFFFF"} /> */}
+        <Clock2 size={62} color={"#FFFFFF"} />
         <Text className="font-montserrat-bold text-white text-2xl">
           Histórico de combinação
         </Text>
