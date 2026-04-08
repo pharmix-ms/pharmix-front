@@ -7,6 +7,7 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import { MedicineStackParamList } from "../navigation/types";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,11 +18,15 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppButton } from "../components/AppButton";
 import { AppMedicineItem } from "../components/AppMedicineItem";
 import { useMedicineSearch } from "../hooks/UseMedicineSearch";
+import { useRef, useState } from "react";
+import { View as RNView } from "react-native";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Medicine">;
 
 export function MedicineScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+  const inputRef = useRef<RNView>(null);
+  const [inputBottom, setInputBottom] = useState(0);
 
   const {
     query,
@@ -31,7 +36,7 @@ export function MedicineScreen({ navigation }: Props) {
     selectedMedicines,
     addMedicine,
     removeMedicine,
-    // canAnalyze,
+    canAnalyze,
   } = useMedicineSearch();
 
   return (
@@ -55,7 +60,15 @@ export function MedicineScreen({ navigation }: Props) {
       </LinearGradient>
 
       <View className="flex-1 p-5 bg-bg-light gap-3">
-        <View className="z-10">
+        <View
+          ref={inputRef}
+          className="z-10"
+          onLayout={() => {
+            inputRef.current?.measureInWindow((x, y, width, height) => {
+              setInputBottom(y + height + 4); // y já é absoluto da tela
+            });
+          }}
+        >
           <AppInput
             placeholder="Buscar medicamento"
             icon={Search}
@@ -65,37 +78,64 @@ export function MedicineScreen({ navigation }: Props) {
 
           {/* Dropdown de sugestões */}
           {(suggestions.length > 0 || isLoading) && (
-            <View className="absolute top-full left-0 right-0 bg-white rounded-2xl border border-border-gray shadow-md overflow-hidden mt-1">
-              {isLoading ? (
-                <View className="py-4 items-center">
-                  <ActivityIndicator color="#00B4D8" />
-                </View>
-              ) : (
-                <FlatList
-                  data={suggestions}
-                  keyExtractor={(item) => item.id}
-                  keyboardShouldPersistTaps="handled"
-                  scrollEnabled={suggestions.length > 4}
-                  style={{ maxHeight: 220 }}
-                  renderItem={({ item }) => (
-                    <Pressable
-                      onPress={() => addMedicine(item)}
-                      className="flex-row items-center gap-3 px-4 py-3 border-b border-border-gray active:bg-bg-info"
-                    >
-                      <Pill size={18} color={"#00B4D8"} />
-                      <View>
-                        <Text className="font-montserrat-medium text-brand-primary">
-                          {item.name}
-                        </Text>
-                        <Text className="font-montserrat text-brand-secondary text-xs">
-                          {item.type} — {item.quantity}
-                        </Text>
-                      </View>
-                    </Pressable>
+            <Modal
+              visible={suggestions.length > 0 || isLoading}
+              transparent
+              animationType="none"
+              onRequestClose={() => setQuery("")}
+            >
+              {/* Overlay transparente para fechar ao clicar fora */}
+              <Pressable style={{ flex: 1 }} onPress={() => setQuery("")}>
+                <View
+                  style={{
+                    position: "absolute",
+                    top: inputBottom,
+                    left: 20,
+                    right: 20,
+                    backgroundColor: "white",
+                    borderRadius: 16,
+                    borderWidth: 1,
+                    borderColor: "#e5e7eb",
+                    maxHeight: 220,
+                    elevation: 10,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 4,
+                    zIndex: 999,
+                  }}
+                >
+                  {isLoading ? (
+                    <View className="py-4 items-center">
+                      <ActivityIndicator color="#00B4D8" />
+                    </View>
+                  ) : (
+                    <FlatList
+                      data={suggestions}
+                      keyExtractor={(item) => `${item.name}-${item.type}`}
+                      keyboardShouldPersistTaps="handled"
+                      showsVerticalScrollIndicator={false}
+                      renderItem={({ item }) => (
+                        <Pressable
+                          onPress={() => addMedicine(item)}
+                          className="flex-row items-center gap-3 px-4 py-3 border-b border-border-gray active:bg-bg-info"
+                        >
+                          <Pill size={18} color="#00B4D8" />
+                          <View>
+                            <Text className="font-montserrat-medium text-brand-primary">
+                              {item.name}
+                            </Text>
+                            <Text className="font-montserrat text-brand-secondary text-xs">
+                              {item.type}
+                            </Text>
+                          </View>
+                        </Pressable>
+                      )}
+                    />
                   )}
-                />
-              )}
-            </View>
+                </View>
+              </Pressable>
+            </Modal>
           )}
         </View>
         <Text className="font-montserrat-bold text-brand-primary text-lg">
@@ -122,11 +162,10 @@ export function MedicineScreen({ navigation }: Props) {
               /* Lista de medicamentos adicionados */
               selectedMedicines.map((medicine) => (
                 <AppMedicineItem
-                  key={medicine.id}
+                  key={`${medicine.name}-${medicine.type}`}
                   name={medicine.name}
                   type={medicine.type}
-                  quantity={medicine.quantity}
-                  onRemove={() => removeMedicine(medicine.id)}
+                  onRemove={() => removeMedicine(medicine)}
                 />
               ))
             )}
@@ -142,6 +181,7 @@ export function MedicineScreen({ navigation }: Props) {
               onPress={() => navigation.navigate("Confirm")}
               icon={Scan}
               className="flex-1"
+              disabled={!canAnalyze}
             />
           </View>
         </ScrollView>
