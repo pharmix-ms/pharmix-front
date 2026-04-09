@@ -4,40 +4,47 @@ import { AppInput } from "../components/AppInput";
 import { AppSwitch } from "../components/AppSwitch";
 import { AppButton } from "../components/AppButton";
 import { ChevronRight } from "lucide-react-native";
-import { useState } from "react";
 import { AppInputBadge } from "../components/AppInputBadge";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { BottomTabParamList } from "../navigation/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { useHealthProfile } from "../hooks/UseHealthProfile";
 
 type Props = BottomTabScreenProps<BottomTabParamList, "Profile">;
 
+const genderOptions = [
+  { label: "Masculino", value: "M" },
+  { label: "Feminino", value: "F" },
+  { label: "Outro", value: "O" },
+];
+
+const CONDITIONS = [
+  "Diabetes",
+  "Hipertensão",
+  "Asma",
+  "Gastrite",
+  "Depressão",
+  "Ansiedade",
+  "Tireoide",
+  "Colesterol alto",
+];
+
+const ALLERGIES = ["Dipirona", "Penicilina", "AAS", "Sulfa", "Ibuprofeno"];
+
 export function ProfileScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const [gender, setGender] = useState("");
-  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
+  const { profile, saveProfile, updateField, toggleListItem } =
+    useHealthProfile();
 
-  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
-  const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
-
-  const toggleSelection = (
-    name: string,
-    state: string[],
-    setState: React.Dispatch<React.SetStateAction<string[]>>,
-  ) => {
-    if (state.includes(name)) {
-      setState(state.filter((item) => item !== name));
-    } else {
-      setState([...state, name]);
-    }
+  const handleContinue = async () => {
+    await saveProfile(profile);
+    navigation.navigate("MedicineStack");
   };
 
-  const genderOptions = [
-    { label: "Masculino", value: "M" },
-    { label: "Feminino", value: "F" },
-    { label: "Outro", value: "O" },
-  ];
+  const handleSkip = () => {
+    navigation.navigate("MedicineStack");
+  };
 
   return (
     <View className="flex-1">
@@ -65,119 +72,43 @@ export function ProfileScreen({ navigation }: Props) {
                 placeholder="Ex.: 42"
                 keyboardType="numeric"
                 containerClassName="flex-1"
+                value={profile.age}
+                onChangeText={(v) => updateField("age", v)}
               />
               <AppInput
                 label="Peso"
                 placeholder="Ex.: 62"
                 keyboardType="numeric"
                 containerClassName="flex-1"
+                value={profile.weight}
+                onChangeText={(v) => updateField("weight", v)}
               />
             </View>
             <AppSelect
               label="Gênero"
               placeholder="Selecionar"
               options={genderOptions}
-              selectedValue={gender}
-              onValueChange={(val) => setGender(val as string)}
+              selectedValue={profile.gender}
+              onValueChange={(val) => updateField("gender", val as string)}
             />
             <AppSwitch
               label="Gestante?"
-              value={isNotificationsEnabled}
-              onValueChange={setIsNotificationsEnabled}
+              value={profile.isPregnant}
+              onValueChange={(v) => updateField("isPregnant", v)}
             />
             <View className="w-full gap-1 mb-2">
               <Text className="font-montserrat-medium text-brand-primary text-base">
                 Condições de saúde
               </Text>
               <View className="w-full flex-row flex-wrap gap-2 p-2 bg-white border border-border-gray rounded-2xl">
-                <AppInputBadge
-                  title="Diabetes"
-                  isSelected={selectedConditions.includes("Diabetes")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Diabetes",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Hipertensão"
-                  isSelected={selectedConditions.includes("Hipertensao")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Hipertensao",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Asma"
-                  isSelected={selectedConditions.includes("Asma")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Asma",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Gastrite"
-                  isSelected={selectedConditions.includes("Gastrite")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Gastrite",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Depressão"
-                  isSelected={selectedConditions.includes("Depressao")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Depressao",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Ansiedade"
-                  isSelected={selectedConditions.includes("Ansiedade")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Ansiedade",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Tireoide"
-                  isSelected={selectedConditions.includes("Tireoide")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Tireoide",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Colesterol alto"
-                  isSelected={selectedConditions.includes("ColesterolAlto")}
-                  onPress={() =>
-                    toggleSelection(
-                      "ColesterolAlto",
-                      selectedConditions,
-                      setSelectedConditions,
-                    )
-                  }
-                />
+                {CONDITIONS.map((condition) => (
+                  <AppInputBadge
+                    key={condition}
+                    title={condition}
+                    isSelected={profile.conditions.includes(condition)}
+                    onPress={() => toggleListItem("conditions", condition)}
+                  />
+                ))}
               </View>
             </View>
             <View className="w-full gap-1 mb-2">
@@ -185,61 +116,14 @@ export function ProfileScreen({ navigation }: Props) {
                 Alergias a medicamentos
               </Text>
               <View className="w-full flex-row flex-wrap gap-2 p-2 bg-white border border-border-gray rounded-2xl">
-                <AppInputBadge
-                  title="Dipirona"
-                  isSelected={selectedAllergies.includes("Dipirona")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Dipirona",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Penicilina"
-                  isSelected={selectedAllergies.includes("Penicilina")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Penicilina",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="AAS"
-                  isSelected={selectedAllergies.includes("AAS")}
-                  onPress={() =>
-                    toggleSelection(
-                      "AAS",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Sulfa"
-                  isSelected={selectedAllergies.includes("Sulfa")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Sulfa",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
-                <AppInputBadge
-                  title="Ibuprofeno"
-                  isSelected={selectedAllergies.includes("Ibuprofeno")}
-                  onPress={() =>
-                    toggleSelection(
-                      "Ibuprofeno",
-                      selectedAllergies,
-                      setSelectedAllergies,
-                    )
-                  }
-                />
+                {ALLERGIES.map((allergy) => (
+                  <AppInputBadge
+                    key={allergy}
+                    title={allergy}
+                    isSelected={profile.allergies.includes(allergy)}
+                    onPress={() => toggleListItem("allergies", allergy)}
+                  />
+                ))}
               </View>
             </View>
           </View>
@@ -249,12 +133,12 @@ export function ProfileScreen({ navigation }: Props) {
             title="Pular"
             variant="outline"
             className="flex-1"
-            onPress={() => navigation.navigate("MedicineStack")}
+            onPress={handleSkip}
           />
 
           <AppButton
             title="Continuar"
-            onPress={() => navigation.navigate("MedicineStack")}
+            onPress={handleContinue}
             icon={ChevronRight}
             className="flex-1"
           />

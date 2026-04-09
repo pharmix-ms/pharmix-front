@@ -13,7 +13,7 @@ import { MedicineStackParamList } from "../navigation/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppInput } from "../components/AppInput";
-import { Lightbulb, Pill, Scan, Search } from "lucide-react-native";
+import { Camera, Lightbulb, Pill, Scan, Search } from "lucide-react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppButton } from "../components/AppButton";
 import { AppMedicineItem } from "../components/AppMedicineItem";
@@ -138,6 +138,11 @@ export function MedicineScreen({ navigation }: Props) {
             </Modal>
           )}
         </View>
+        <AppButton
+          title="Escanear medicamentos"
+          onPress={() => navigation.navigate("Camera")}
+          icon={Camera}
+        />
         <Text className="font-montserrat-bold text-brand-primary text-lg">
           Medicamentos Adicionados
         </Text>
