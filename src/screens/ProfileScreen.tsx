@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable, Animated } from "react-native";
+import { View, Text, ScrollView, Pressable, Animated, ActivityIndicator } from "react-native";
 import { AppSelect } from "../components/AppSelect";
 import { AppInput } from "../components/AppInput";
 import { AppSwitch } from "../components/AppSwitch";
@@ -10,10 +10,8 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { BottomTabParamList } from "../navigation/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  healthConditionCategories,
-  drugAllergyCategories,
-} from "../data/healthData";
+import { healthConditionCategories } from "../data/healthData";
+import { useAllergyMedicines } from "../hooks/useAllergyMedicines";
 
 type Props = BottomTabScreenProps<BottomTabParamList, "Profile">;
 
@@ -28,11 +26,14 @@ export function ProfileScreen({ navigation }: Props) {
   const [expandedConditions, setExpandedConditions] = useState(false);
   const [expandedAllergies, setExpandedAllergies] = useState(false);
 
+  const { categories: allergyCategories, isLoading: isLoadingMedicines } =
+    useAllergyMedicines();
+
   const [selectedConditionCategory, setSelectedConditionCategory] = useState(
     healthConditionCategories[0].label,
   );
   const [selectedAllergyCategory, setSelectedAllergyCategory] = useState(
-    drugAllergyCategories[0].label,
+    allergyCategories[0]?.label || "Analgesia",
   );
 
   const conditionsRotation = useRef(new Animated.Value(0)).current;
@@ -44,7 +45,7 @@ export function ProfileScreen({ navigation }: Props) {
     )?.items ?? [];
 
   const currentAllergyItems =
-    drugAllergyCategories.find(
+    allergyCategories.find(
       (category) => category.label === selectedAllergyCategory,
     )?.items ?? [];
 
@@ -292,7 +293,7 @@ export function ProfileScreen({ navigation }: Props) {
                       showsHorizontalScrollIndicator={false}
                     >
                       <View className="flex-row gap-2">
-                        {drugAllergyCategories.map((category) => (
+                        {allergyCategories.map((category) => (
                           <Pressable
                             key={category.label}
                             onPress={() => setSelectedAllergyCategory(category.label)}
