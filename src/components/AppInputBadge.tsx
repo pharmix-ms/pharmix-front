@@ -59,7 +59,7 @@ export function AppInputBadge({
           colors={GRADIENT_COLORS}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          className="h-full w-full items-center justify-center px-4 py-2"
+          className="flex-1 px-4 py-2"
         >
           <Text className="text-white font-montserrat-medium text-base">
             {title}

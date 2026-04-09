@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 
-export function useHideTabBar() {
+export function UseHideTabBar() {
   const navigation = useNavigation();
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { MedicineScreen } from "../screens/MedicineScreen";
 import { ConfirmScreen } from "../screens/ConfirmScreen";
 import { ResultScreen } from "../screens/ResultScreen";
 import { DetailsScreen } from "../screens/DetailsScreen";
+import { CameraScreen } from "../screens/CameraScreen";
 
 const Stack = createNativeStackNavigator<MedicineStackParamList>();
 
@@ -16,6 +17,7 @@ export function MedicineStack() {
       initialRouteName="Medicine"
     >
       <Stack.Screen name="Medicine" component={MedicineScreen} />
+      <Stack.Screen name="Camera" component={CameraScreen} />
       <Stack.Screen name="Confirm" component={ConfirmScreen} />
       <Stack.Screen name="Result" component={ResultScreen} />
       <Stack.Screen name="Details" component={DetailsScreen} />
