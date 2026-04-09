@@ -1,3 +1,5 @@
+import { Medicine } from "../hooks/UseMedicineSearch";
+
 export type RootStackParamList = {
   Home: undefined;
   MainTabs: undefined;
@@ -12,7 +14,7 @@ export type BottomTabParamList = {
 export type MedicineStackParamList = {
   Medicine: undefined;
   Camera: undefined;
-  Confirm: undefined;
-  Result: { status: "safe" | "warning" | "danger" };
+  Confirm: { medicines: Medicine[] };
+  Result: { medicines: Medicine[]; status: "safe" | "warning" | "danger" };
   Details: { status: "safe" | "warning" | "danger" };
 };

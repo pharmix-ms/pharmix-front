@@ -6,7 +6,7 @@ interface AppHistoryItemProps {
   title: string;
   date: string;
   medication: string;
-  gravity: "perigoso" | "atencao" | "seguro";
+  gravity: "danger" | "warning" | "safe";
 }
 
 export function AppHistoryItem({
@@ -16,9 +16,9 @@ export function AppHistoryItem({
   gravity,
 }: AppHistoryItemProps) {
   const borderColor =
-    gravity === "perigoso"
+    gravity === "danger"
       ? "border-danger"
-      : gravity === "atencao"
+      : gravity === "warning"
         ? "border-warning"
         : "border-secondary";
   return (

@@ -183,7 +183,9 @@ export function MedicineScreen({ navigation }: Props) {
             </View>
             <AppButton
               title="Analisar Combinação"
-              onPress={() => navigation.navigate("Confirm")}
+              onPress={() =>
+                navigation.navigate("Confirm", { medicines: selectedMedicines })
+              }
               icon={Scan}
               className="flex-1"
               disabled={!canAnalyze}
