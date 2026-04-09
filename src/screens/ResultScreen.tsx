@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { MedicineStackParamList } from "../navigation/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,6 +11,7 @@ import {
   XCircle,
 } from "lucide-react-native";
 import { AppButton } from "../components/AppButton";
+import { AppInterationItem } from "../components/AppInterationItem";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Result">;
 
@@ -43,7 +44,7 @@ const STATUS_CONFIG = {
 export function ResultScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   // useHideTabBar();
-  const { status } = route.params;
+  const { medicines, status } = route.params;
 
   const config = STATUS_CONFIG[status];
 
@@ -64,19 +65,47 @@ export function ResultScreen({ navigation, route }: Props) {
           {config.description}
         </Text>
       </LinearGradient>
-      <View className="flex-1 p-5 bg-bg-light gap-3">
-        <AppButton
-          title="Nova Análise"
-          variant="outline"
-          onPress={() => navigation.popToTop()}
-          icon={RotateCcw}
-        />
-        <AppButton
-          title="Ver detalhes completos"
-          onPress={() => navigation.navigate("Details", { status })}
-          icon={ClipboardList}
-          gradientColors={config.colors}
-        />
+      <View className="flex-1 p-5 bg-bg-light justify-between">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View className="gap-3 flex-1">
+            <View className="bg-white rounded-2xl px-4 py-3 gap-2">
+              <Text className="font-montserrat-semibold text-brand-primary">
+                Medicamentos analisados
+              </Text>
+              <View className="flex-row gap-2 flex-wrap">
+                {medicines.map((medicine, index) => (
+                  <View key={index} className="bg-light rounded-full px-4 py-2">
+                    <Text className="font-montserrat-medium text-brand-primary">
+                      {medicine.type}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+            <Text className="font-montserrat-bold text-brand-primary text-lg">
+              Interações encontradas (1)
+            </Text>
+            <AppInterationItem
+              gravity={status}
+              title="Duplicidade de anti-hipertensivo"
+              medication={["IBUPROFENO", "PARACETAMOL"]}
+            />
+          </View>
+        </ScrollView>
+        <View className="gap-3 pt-5">
+          <AppButton
+            title="Nova Análise"
+            variant="outline"
+            onPress={() => navigation.popToTop()}
+            icon={RotateCcw}
+          />
+          <AppButton
+            title="Ver detalhes completos"
+            onPress={() => navigation.navigate("Details", { status })}
+            icon={ClipboardList}
+            gradientColors={config.colors}
+          />
+        </View>
       </View>
     </View>
   );

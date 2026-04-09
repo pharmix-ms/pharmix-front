@@ -7,15 +7,15 @@ interface AppBadgeProps {
 }
 
 const badgeText = {
-  seguro: "Seguro",
-  atencao: "Atenção",
-  perigoso: "Perigoso",
+  safe: "Seguro",
+  warning: "Atenção",
+  danger: "Perigoso",
 };
 
 const badgeBg = {
-  seguro: ["#2ECC71", "#2EB88A"],
-  atencao: ["#F4A261", "#FF8000"],
-  perigoso: ["#FF6346", "#E63946"],
+  safe: ["#2ECC71", "#2EB88A"],
+  warning: ["#F4A261", "#FF8000"],
+  danger: ["#FF6346", "#E63946"],
 } as const;
 
 export function AppBadge({ variant }: AppBadgeProps) {

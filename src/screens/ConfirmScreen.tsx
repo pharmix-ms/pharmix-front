@@ -9,8 +9,9 @@ import { GradientWrapper } from "../components/GradientWrapper";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Confirm">;
 
-export function ConfirmScreen({ navigation }: Props) {
+export function ConfirmScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
+  const { medicines } = route.params;
 
   function getRandomStatus(): "safe" | "warning" | "danger" {
     const options = ["safe", "warning", "danger"] as const;
@@ -37,23 +38,27 @@ export function ConfirmScreen({ navigation }: Props) {
         <Text className="font-montserrat-bold text-brand-primary text-lg">
           Medicamentos Adicionados
         </Text>
-        <View className="flex-row items-center bg-white rounded-2xl border border-border-gray px-4 py-3">
-          <View className="flex-1 flex-row items-center gap-4">
+        {medicines.map((medicine, index) => (
+          <View
+            key={index}
+            className="flex-row items-center bg-white rounded-2xl border border-border-gray px-4 py-3 gap-4"
+          >
             <GradientWrapper>
               <Text className="font-montserrat-medium text-xl w-6 text-center">
-                1
+                {index + 1}
               </Text>
             </GradientWrapper>
             <View className="flex-1">
               <Text className="font-montserrat-medium text-brand-primary">
-                Losartana
+                {medicine.name}
               </Text>
               <Text className="font-montserrat-medium text-brand-secondary">
-                Anti-hipertensivo - 50mg
+                {medicine.type}
               </Text>
             </View>
           </View>
-        </View>
+        ))}
+
         <View className="border bg-bg-warning border-warning rounded-2xl gap-4 flex-row items-center px-4 py-3">
           <Microscope size={24} color={"#F4A261"} />
           <Text className="font-montserrat-semibold text-warning flex-1">
@@ -66,6 +71,7 @@ export function ConfirmScreen({ navigation }: Props) {
           title="Confirmar Análise"
           onPress={() =>
             navigation.navigate("Result", {
+              medicines: medicines,
               status: getRandomStatus(), // ← mock, depois vira resposta da API
             })
           }

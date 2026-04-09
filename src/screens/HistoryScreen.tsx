@@ -39,19 +39,19 @@ export function HistoryScreen() {
                 title="Antidiabético com Anti-inflamatório"
                 date="Ontem, 09:15"
                 medication="Metformina 500mg + Voltaren 50mg"
-                gravity="seguro"
+                gravity="safe"
               />
               <AppHistoryItem
                 title="Antidiabético com Anti-inflamatório"
                 date="Ontem, 09:15"
                 medication="Metformina 500mg + Voltaren 50mg"
-                gravity="atencao"
+                gravity="warning"
               />
               <AppHistoryItem
                 title="Antidiabético com Anti-inflamatório"
                 date="Ontem, 09:15"
                 medication="Metformina 500mg + Voltaren 50mg"
-                gravity="perigoso"
+                gravity="danger"
               />
             </View>
           </View>
@@ -64,19 +64,19 @@ export function HistoryScreen() {
                 title="Antidiabético com Anti-inflamatório"
                 date="Ontem, 09:15"
                 medication="Metformina 500mg + Voltaren 50mg"
-                gravity="seguro"
+                gravity="safe"
               />
               <AppHistoryItem
                 title="Antidiabético com Anti-inflamatório"
                 date="Ontem, 09:15"
                 medication="Metformina 500mg + Voltaren 50mg"
-                gravity="atencao"
+                gravity="warning"
               />
               <AppHistoryItem
                 title="Antidiabético com Anti-inflamatório"
                 date="Ontem, 09:15"
                 medication="Metformina 500mg + Voltaren 50mg"
-                gravity="perigoso"
+                gravity="danger"
               />
             </View>
           </View>
