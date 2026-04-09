@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   AlertTriangle,
+  Check,
   CheckCircle,
   ClipboardList,
   RotateCcw,
@@ -48,6 +49,8 @@ export function ResultScreen({ navigation, route }: Props) {
 
   const config = STATUS_CONFIG[status];
 
+  const isSafe = status === "safe";
+
   return (
     <View className="flex-1">
       <LinearGradient
@@ -83,28 +86,46 @@ export function ResultScreen({ navigation, route }: Props) {
               </View>
             </View>
             <Text className="font-montserrat-bold text-brand-primary text-lg">
-              Interações encontradas (1)
+              Interações encontradas {isSafe ? "" : "(1)"}
             </Text>
-            <AppInterationItem
-              gravity={status}
-              title="Duplicidade de anti-hipertensivo"
-              medication={["IBUPROFENO", "PARACETAMOL"]}
-            />
+            {isSafe ? (
+              <View className="justify-center items-center bg-bg-safe rounded-2xl border-2 border-secondary border-dashed py-9 gap-2">
+                <Check size={42} color={"#344051"} />
+                <View className="items-center">
+                  <Text className="font-montserrat-bold text-brand-primary text-lg">
+                    Nenhuma interação encontrada
+                  </Text>
+                  <Text className="font-montserrat-bold text-brand-secondary text-center">
+                    Consumir as medicações em conjunto não causarão efeitos
+                    colaterais
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <AppInterationItem
+                gravity={status}
+                title="Duplicidade de anti-hipertensivo"
+                medication={["IBUPROFENO", "PARACETAMOL"]}
+              />
+            )}
           </View>
         </ScrollView>
         <View className="gap-3 pt-5">
           <AppButton
             title="Nova Análise"
-            variant="outline"
+            variant={isSafe ? "primary" : "outline"}
             onPress={() => navigation.popToTop()}
             icon={RotateCcw}
+            gradientColors={isSafe ? config.colors : undefined}
           />
-          <AppButton
-            title="Ver detalhes completos"
-            onPress={() => navigation.navigate("Details", { status })}
-            icon={ClipboardList}
-            gradientColors={config.colors}
-          />
+          {!isSafe && (
+            <AppButton
+              title="Ver detalhes completos"
+              onPress={() => navigation.navigate("Details", { status })}
+              icon={ClipboardList}
+              gradientColors={config.colors}
+            />
+          )}
         </View>
       </View>
     </View>

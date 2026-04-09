@@ -43,6 +43,7 @@ module.exports = {
           light: "#F1F5F9",
           gray: "#CED2DA",
           info: "rgba(0, 180, 216, 0.1)", // #00B4D8 com 10% de opacidade
+          safe: "rgba(46, 184, 138, 0.1)", // #2EB88A com 10% de opacidade
           warning: "rgba(254, 206, 169, 0.1)", // #FECEA9 com 10% de opacidade
         },
       },
