@@ -1,11 +1,11 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { AppSelect } from "../components/AppSelect";
 import { AppInput } from "../components/AppInput";
 import { AppSwitch } from "../components/AppSwitch";
 import { AppButton } from "../components/AppButton";
 import { AppHealthAccordion } from "../components/AppHealthAccordion";
 import { ChevronRight } from "lucide-react-native";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { BottomTabParamList } from "../navigation/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,6 +15,7 @@ import {
   healthConditionCategories,
   drugAllergyCategories,
 } from "../data/healthData";
+import { useFocusEffect } from "@react-navigation/native";
 
 type Props = BottomTabScreenProps<BottomTabParamList, "Profile">;
 
@@ -26,10 +27,20 @@ const genderOptions = [
 
 export function ProfileScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { profile, saveProfile, updateField } = useHealthProfile();
+  const { profile, saveProfile, updateField, isLoading, resetProfile } =
+    useHealthProfile();
 
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isLoading) {
+        setSelectedConditions(profile.conditions);
+        setSelectedAllergies(profile.allergies);
+      }
+    }, [isLoading, profile.conditions, profile.allergies]),
+  );
 
   const toggleItem = (
     item: string,
@@ -50,7 +61,36 @@ export function ProfileScreen({ navigation }: Props) {
     navigation.navigate("MedicineStack");
   };
 
-  const handleSkip = () => navigation.navigate("MedicineStack");
+  const handleSkip = () => {
+    resetProfile();
+    navigation.navigate("MedicineStack");
+  };
+
+  if (isLoading) {
+    return (
+      <View className="flex-1">
+        <LinearGradient
+          colors={["#00B4D8", "#2ECC71"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{ padding: 25, paddingTop: 25 + insets.top }}
+          className="gap-2"
+        >
+          <Text className="font-montserrat-bold text-white text-2xl">
+            Seu perfil de saúde
+          </Text>
+          <Text className="font-montserrat text-white text-base">
+            Essas informações nos ajudam a tornar a análise mais precisa para
+            você.
+          </Text>
+        </LinearGradient>
+
+        <View className="flex-1 bg-bg-light justify-center items-center">
+          <ActivityIndicator size={"large"} color="#00B4D8" />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1">

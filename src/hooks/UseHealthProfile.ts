@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 export interface HealthProfile {
@@ -26,6 +26,7 @@ const DEFAULT_PROFILE: HealthProfile = {
 export function useHealthProfile() {
   const [profile, setProfile] = useState<HealthProfile>(DEFAULT_PROFILE);
   const [isLoading, setIsLoading] = useState(true);
+  const savedProfile = useRef<HealthProfile>(DEFAULT_PROFILE);
 
   // Carrega o perfil salvo ao montar
   useEffect(() => {
@@ -33,8 +34,11 @@ export function useHealthProfile() {
       try {
         const raw = await AsyncStorage.getItem(PROFILE_KEY);
         if (raw) {
-          setProfile(JSON.parse(raw) as HealthProfile);
+          const parsed = JSON.parse(raw) as HealthProfile;
+          setProfile(parsed);
+          savedProfile.current = parsed;
         }
+        console.log("health_profile:", raw);
       } catch {
         // sem perfil salvo, usa o padrão
       } finally {
@@ -62,24 +66,15 @@ export function useHealthProfile() {
     [],
   );
 
-  const toggleListItem = useCallback(
-    (key: "conditions" | "allergies", item: string) => {
-      setProfile((prev) => {
-        const list = prev[key];
-        const updated = list.includes(item)
-          ? list.filter((i) => i !== item)
-          : [...list, item];
-        return { ...prev, [key]: updated };
-      });
-    },
-    [],
-  );
+  const resetProfile = useCallback(() => {
+    setProfile(savedProfile.current);
+  }, []);
 
   return {
     profile,
     isLoading,
     saveProfile,
     updateField,
-    toggleListItem,
+    resetProfile,
   };
 }

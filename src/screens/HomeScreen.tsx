@@ -42,7 +42,7 @@ export function HomeScreen({ navigation }: Props) {
             um profissional de saúde.
           </Text>
         </View>
-        <View className="items-center flex-col gap-3">
+        <View className="items-center flex-col">
           <AppButton
             variant="ghost"
             title="Entendi, vamos começar"
@@ -50,8 +50,12 @@ export function HomeScreen({ navigation }: Props) {
             onPress={() => navigation.navigate("MainTabs")}
             className="w-full"
           />
-          <Pressable onPress={() => navigation.navigate("MainTabs")}>
-            <Text className="underline font-montserrat text-white">
+          <Pressable
+            onPress={() =>
+              navigation.navigate("MainTabs", { screen: "MedicineStack" })
+            }
+          >
+            <Text className="underline font-montserrat text-white text-lg p-3">
               Pular e usar sem perfil
             </Text>
           </Pressable>

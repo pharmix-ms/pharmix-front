@@ -2,7 +2,7 @@ import { Medicine } from "../hooks/UseMedicineSearch";
 
 export type RootStackParamList = {
   Home: undefined;
-  MainTabs: undefined;
+  MainTabs: { screen: keyof BottomTabParamList } | undefined;
 };
 
 export type BottomTabParamList = {
