@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Text, Pressable, Animated } from "react-native";
+import { Text, Pressable, Animated, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface AppInputBadgeProps {
@@ -38,30 +38,25 @@ export function AppInputBadge({
     <Pressable
       onPress={onPress}
       className={`overflow-hidden rounded-full bg-bg-light ${className}`}
-      style={{ position: "relative" }}
+      style={[styles.badgeContainer]}
     >
       <Animated.View
-        style={{ opacity: unselectedOpacity }}
-        className="items-center justify-center px-4 py-2"
+        style={[styles.badgeLayer, { opacity: unselectedOpacity }]}
+        className="items-center justify-center px-4 py-3"
       >
-        <Text className="text-brand-primary font-montserrat-medium text-base">
+        <Text style={styles.badgeText} className="text-brand-primary font-montserrat-medium text-base text-center">
           {title}
         </Text>
       </Animated.View>
 
-      <Animated.View
-        style={{
-          ...StyleSheet.absoluteFillObject,
-          opacity: selectedOpacity,
-        }}
-      >
+      <Animated.View style={[styles.absoluteFill, { opacity: selectedOpacity }]}> 
         <LinearGradient
           colors={GRADIENT_COLORS}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           className="flex-1 px-4 py-2"
         >
-          <Text className="text-white font-montserrat-medium text-base">
+          <Text style={styles.badgeText} className="text-white font-montserrat-medium text-base text-center">
             {title}
           </Text>
         </LinearGradient>
@@ -70,4 +65,22 @@ export function AppInputBadge({
   );
 }
 
-import { StyleSheet } from "react-native";
+const styles = StyleSheet.create({
+  badgeContainer: {
+    position: "relative",
+    minWidth: 110,
+    maxWidth: 160,
+    alignSelf: "flex-start",
+  },
+  badgeLayer: {
+    width: "100%",
+    alignSelf: "flex-start",
+  },
+  badgeText: {
+    textAlign: "center",
+    flexWrap: "wrap",
+  },
+  absoluteFill: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});
