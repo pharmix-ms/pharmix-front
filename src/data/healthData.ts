@@ -62,21 +62,11 @@ export const healthConditionCategories: HealthCategory[] = [
   },
   {
     label: "Endócrinas",
-    items: [
-      "Tireoide",
-      "Hipotireoidismo",
-      "Hipertireoidismo",
-    ],
+    items: ["Tireoide", "Hipotireoidismo", "Hipertireoidismo"],
   },
   {
     label: "Reumáticas",
-    items: [
-      "Artrite",
-      "Artrose",
-      "Osteoporose",
-      "Lúpus",
-      "Fibromialgia",
-    ],
+    items: ["Artrite", "Artrose", "Osteoporose", "Lúpus", "Fibromialgia"],
   },
   {
     label: "Gastrointestinais",
@@ -99,12 +89,7 @@ export const healthConditionCategories: HealthCategory[] = [
   },
   {
     label: "Outras",
-    items: [
-      "COVID-19 longo",
-      "Insuficiência renal",
-      "Varizes",
-      "Câncer",
-    ],
+    items: ["COVID-19 longo", "Insuficiência renal", "Varizes", "Câncer"],
   },
 ];
 
@@ -175,12 +160,7 @@ export const drugAllergyCategories: HealthCategory[] = [
   },
   {
     label: "Hormônios",
-    items: [
-      "Insulina",
-      "Dexametasona",
-      "Omeprazol",
-      "Corticosteroides",
-    ],
+    items: ["Insulina", "Dexametasona", "Omeprazol", "Corticosteroides"],
   },
   {
     label: "Antifúngicos",
@@ -191,11 +171,3 @@ export const drugAllergyCategories: HealthCategory[] = [
     items: ["Sulfa", "Contraste com iodo", "Vitamina K", "Antiretrovirais"],
   },
 ];
-
-export const healthConditions = Array.from(
-  new Set(healthConditionCategories.flatMap((category) => category.items)),
-);
-
-export const drugAllergies = Array.from(
-  new Set(drugAllergyCategories.flatMap((category) => category.items)),
-);
