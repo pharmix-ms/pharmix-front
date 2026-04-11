@@ -1,0 +1,41 @@
+{
+  "explicação": [
+    "Informações que vai do front para a API (análise de medicamentos):",
+
+    "status = \"danger\" | \"warning\" | \"safe\"",
+
+    "Opicional: ",
+    " - Idade : int, ",
+    " - Peso : int, ",
+    " - Gênero : string, ",
+    " - Gestante : boolean, ",
+    " - Condições de saúde : string[] ",
+    " - alergias a medicamentos string[] ",
+
+    "Obrigatório:",
+    " - medicamentos : string[]",
+
+    "Exemplo do que a IA deve devolver:"
+  ],
+  "interacoes": [
+    {
+      "id": 1,
+      "titulo": "Duplicidade de anti-hipertensivo",
+      "combinacao": ["IBUPROFENO", "PARACETAMOL"],
+      "status": "warning",
+      "o_que_acontece": "Dipirona (metamizol) e ibuprofeno podem ser usados juntos, mas há aumento do risco de efeitos adversos quando administrados ao mesmo tempo, especialmente em uso prolongado ou em doses altas.",
+      "possiveis_efeitos": ["Tontura", "Desmaios", "Fraqueza"],
+      "porque_isso_acontece": "Embora atuem por mecanismos diferentes, ambos exercem efeito analgésico e antipirético. O ibuprofeno é um anti-inflamatório não esteroidal (AINE), que pode afetar a mucosa gástrica e a função renal, e a associação com outro analgésico pode potencializar esses riscos.",
+      "recomendacoes": "Evitar uso conjunto por períodos prolongados sem orientação médica. Usar as menores doses eficazes e por curto prazo. Ter cautela em idosos, pessoas com doença renal, histórico de úlcera ou sangramento gastrointestinal. Se houver dor abdominal intensa, fezes escuras, redução da urina ou febre persistente, procurar avaliação médica."
+    },
+    {
+      "titulo": "Duplicidade de anti-hipertensivo",
+      "combinacao": ["IBUPROFENO", "PARACETAMOL"],
+      "status": "warning",
+      "o_que_acontece": "Dipirona (metamizol) e ibuprofeno podem ser usados juntos, mas há aumento do risco de efeitos adversos quando administrados ao mesmo tempo, especialmente em uso prolongado ou em doses altas.",
+      "possiveis_efeitos": ["Tontura", "Desmaios", "Fraqueza"],
+      "porque_isso_acontece": "Embora atuem por mecanismos diferentes, ambos exercem efeito analgésico e antipirético. O ibuprofeno é um anti-inflamatório não esteroidal (AINE), que pode afetar a mucosa gástrica e a função renal, e a associação com outro analgésico pode potencializar esses riscos.",
+      "recomendacoes": "Evitar uso conjunto por períodos prolongados sem orientação médica. Usar as menores doses eficazes e por curto prazo. Ter cautela em idosos, pessoas com doença renal, histórico de úlcera ou sangramento gastrointestinal. Se houver dor abdominal intensa, fezes escuras, redução da urina ou febre persistente, procurar avaliação médica."
+    }
+  ]
+}
