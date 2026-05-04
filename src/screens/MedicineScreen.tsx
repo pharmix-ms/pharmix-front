@@ -13,13 +13,14 @@ import { MedicineStackParamList } from "../navigation/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppInput } from "../components/AppInput";
-import { Camera, Lightbulb, Pill, Scan, Search } from "lucide-react-native";
+import { Lightbulb, Pill, Scan, Search } from "lucide-react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppButton } from "../components/AppButton";
 import { AppMedicineItem } from "../components/AppMedicineItem";
 import { useMedicineSearch } from "../hooks/UseMedicineSearch";
 import { useRef, useState } from "react";
 import { View as RNView } from "react-native";
+import { useHealthProfile } from "../hooks/UseHealthProfile";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Medicine">;
 
@@ -38,6 +39,13 @@ export function MedicineScreen({ navigation }: Props) {
     removeMedicine,
     canAnalyze,
   } = useMedicineSearch();
+
+  const { profile } = useHealthProfile();
+
+  function handleConfirm() {
+    console.log(profile);
+    navigation.navigate("Confirm", { medicines: selectedMedicines });
+  }
 
   return (
     <KeyboardAvoidingView
@@ -138,11 +146,11 @@ export function MedicineScreen({ navigation }: Props) {
             </Modal>
           )}
         </View>
-        <AppButton
+        {/* <AppButton
           title="Escanear medicamentos"
           onPress={() => navigation.navigate("Camera")}
           icon={Camera}
-        />
+        /> */}
         <Text className="font-montserrat-bold text-brand-primary text-lg">
           Medicamentos Adicionados
         </Text>
@@ -183,9 +191,7 @@ export function MedicineScreen({ navigation }: Props) {
             </View>
             <AppButton
               title="Analisar Combinação"
-              onPress={() =>
-                navigation.navigate("Confirm", { medicines: selectedMedicines })
-              }
+              onPress={handleConfirm}
               icon={Scan}
               className="flex-1"
               disabled={!canAnalyze}

@@ -22,7 +22,6 @@ type Props = BottomTabScreenProps<BottomTabParamList, "Profile">;
 const genderOptions = [
   { label: "Masculino", value: "M" },
   { label: "Feminino", value: "F" },
-  { label: "Outro", value: "O" },
 ];
 
 export function ProfileScreen({ navigation }: Props) {
