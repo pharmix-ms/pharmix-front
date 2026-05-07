@@ -1,118 +1,117 @@
 export const medicineData = [
-"AAS"	
-"Acetaminofeno"	
-"Acido valproico"	
-"Adenosina"	
-"Albuterol"	
-"Alteplase"	
-"Amicacina"	
-"Aminofilina"	
-"Amiodarona"	
-"Amitriptilina"	
-"Anlodipino"	
-Atenolol	
-Atropina	
-Azitromicina	
-Azul de metileno	
-Betametasona	
-Biperideno	
-Captopril	
-Carbamazepina	
-Carvedilol	
-Ceftriazona	
-Cetoprofeno	
-Cetorolaco	
-Ciclobenzaprina	
-Ciprofloxacino	
-Cisatracurio	
-Citalopram	
-Claritromicina	
-Clonazepam	
-Clonidina	
-Clopidogrel	
-Cloreto de potassio	
-Cloreto de potassio (dragea)	
-Clorpromazina	
-Colchicina	
-Desmopressina	
-Dexametasona	
-Dexclorfeniramina	
-Diazepam	
-Diclofenaco	
-Digoxina	
-Diltiazem	
-Dimenidrato	
-Dinitrato de isossorbida	
-Dobutamina	
-Dopamina	
-Enalapril	
-Enoxaparina	
-Epinefrina	
-Escopolamina	
-Espironolactona	
-Fenilefrina	
-Fenitoina	
-Fenobarbital	
-Fentanil	
-Fentanila	
-Fluconazol	
-Flumazenil	
-Fluoxetina	
-Furosemida	
-Gentamicina	
-Gluconato de calcio	
-Haloperidol	
-Heparina	
-Hidroclorotiazida	
-Hidrocortisona	
-Hidroxizina	
-Insulina	
-Iodeto de potassio	
-Isoflurano	
-Levofloxacino	
-Lidocaina	
-Loperamida	
-Losartana	
-Meropenem	
-Metadona	
-Metaraminol	
-Metildopa	
-Metilprednisolona	
-Metoclopramida	
-Metoprolol	
-Metronidazol	
-Midazolam	
-Monoitrato de isossorbida	
-Morfina	
-Neomicina	
-Neostigmina	
-Nimesulida	
-Nimodipina	
-Nitroglicerina	
-Noradrenalina	
-Norfloxacino	
-Omeprazol	
-Ondansetrona	
-Pancuronio	
-Paracetamol	
-Prednisolona	
-Prednisona	
-Prilocaina	
-Prometazina	
-Propanolol	
-Ranitidina	
-Remifentanila	
-Risperidona	
-Sertralina	
-Sevoflurano	
-Sinvastatina	
-Succinilcolina	
-Sulfadiazina	
-Sulfametoxazol	
-Sulfato de magnesio	
-Tiopental	
-Tramadol	
-Varfarina	
-Verapamil
-
-]
+  "AAS",
+  "Acetaminofeno",
+  "Acido valproico",
+  "Adenosina",
+  "Albuterol",
+  "Alteplase",
+  "Amicacina",
+  "Aminofilina",
+  "Amiodarona",
+  "Amitriptilina",
+  "Anlodipino",
+  "Atenolol",
+  "Atropina",
+  "Azitromicina",
+  "Azul de metileno",
+  "Betametasona",
+  "Biperideno",
+  "Captopril",
+  "Carbamazepina",
+  "Carvedilol",
+  "Ceftriazona",
+  "Cetoprofeno",
+  "Cetorolaco",
+  "Ciclobenzaprina",
+  "Ciprofloxacino",
+  "Cisatracurio",
+  "Citalopram",
+  "Claritromicina",
+  "Clonazepam",
+  "Clonidina",
+  "Clopidogrel",
+  "Cloreto de potassio",
+  "Cloreto de potassio (dragea)",
+  "Clorpromazina",
+  "Colchicina",
+  "Desmopressina",
+  "Dexametasona",
+  "Dexclorfeniramina",
+  "Diazepam",
+  "Diclofenaco",
+  "Digoxina",
+  "Diltiazem",
+  "Dimenidrato",
+  "Dinitrato de isossorbida",
+  "Dobutamina",
+  "Dopamina",
+  "Enalapril",
+  "Enoxaparina",
+  "Epinefrina",
+  "Escopolamina",
+  "Espironolactona",
+  "Fenilefrina",
+  "Fenitoina",
+  "Fenobarbital",
+  "Fentanil",
+  "Fentanila",
+  "Fluconazol",
+  "Flumazenil",
+  "Fluoxetina",
+  "Furosemida",
+  "Gentamicina",
+  "Gluconato de calcio",
+  "Haloperidol",
+  "Heparina",
+  "Hidroclorotiazida",
+  "Hidrocortisona",
+  "Hidroxizina",
+  "Insulina",
+  "Iodeto de potassio",
+  "Isoflurano",
+  "Levofloxacino",
+  "Lidocaina",
+  "Loperamida",
+  "Losartana",
+  "Meropenem",
+  "Metadona",
+  "Metaraminol",
+  "Metildopa",
+  "Metilprednisolona",
+  "Metoclopramida",
+  "Metoprolol",
+  "Metronidazol",
+  "Midazolam",
+  "Monoitrato de isossorbida",
+  "Morfina",
+  "Neomicina",
+  "Neostigmina",
+  "Nimesulida",
+  "Nimodipina",
+  "Nitroglicerina",
+  "Noradrenalina",
+  "Norfloxacino",
+  "Omeprazol",
+  "Ondansetrona",
+  "Pancuronio",
+  "Paracetamol",
+  "Prednisolona",
+  "Prednisona",
+  "Prilocaina",
+  "Prometazina",
+  "Propanolol",
+  "Ranitidina",
+  "Remifentanila",
+  "Risperidona",
+  "Sertralina",
+  "Sevoflurano",
+  "Sinvastatina",
+  "Succinilcolina",
+  "Sulfadiazina",
+  "Sulfametoxazol",
+  "Sulfato de magnesio",
+  "Tiopental",
+  "Tramadol",
+  "Varfarina",
+  "Verapamil",
+];
