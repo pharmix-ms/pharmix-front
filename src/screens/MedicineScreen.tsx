@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Modal,
 } from "react-native";
-import { MedicineStackParamList } from "../navigation/types";
+import { MedicineStackParamList } from "../types/navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppInput } from "../components/AppInput";
@@ -20,7 +20,7 @@ import { AppMedicineItem } from "../components/AppMedicineItem";
 import { useMedicineSearch } from "../hooks/UseMedicineSearch";
 import { useRef, useState } from "react";
 import { View as RNView } from "react-native";
-import { useHealthProfile } from "../hooks/UseHealthProfile";
+// import { useHealthProfile } from "../hooks/UseHealthProfile";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Medicine">;
 
@@ -40,10 +40,10 @@ export function MedicineScreen({ navigation }: Props) {
     canAnalyze,
   } = useMedicineSearch();
 
-  const { profile } = useHealthProfile();
+  // const { profile } = useHealthProfile();
 
   function handleConfirm() {
-    console.log(profile);
+    // console.log(profile);
     navigation.navigate("Confirm", { medicines: selectedMedicines });
   }
 

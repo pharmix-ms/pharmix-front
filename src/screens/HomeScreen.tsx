@@ -1,6 +1,6 @@
 import { View, Text, Pressable, Image } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/types";
+import { RootStackParamList } from "../types/navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { ChevronRight, TriangleAlert } from "lucide-react-native";
 import { AppButton } from "../components/AppButton";

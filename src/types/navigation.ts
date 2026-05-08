@@ -1,4 +1,5 @@
 import { Medicine } from "../hooks/UseMedicineSearch";
+import { ApiInteracao } from "./api";
 
 export type RootStackParamList = {
   Home: undefined;
@@ -15,6 +16,6 @@ export type MedicineStackParamList = {
   Medicine: undefined;
   Camera: undefined;
   Confirm: { medicines: Medicine[] };
-  Result: { medicines: Medicine[]; status: "safe" | "warning" | "danger" };
-  Details: { status: "safe" | "warning" | "danger" };
+  Result: { medicines: Medicine[]; interactions: ApiInteracao[] };
+  Details: { interaction: ApiInteracao; status: "safe" | "warning" | "danger" };
 };

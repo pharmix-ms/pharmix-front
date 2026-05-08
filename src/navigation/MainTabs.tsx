@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { BottomTabParamList } from "./types";
+import { BottomTabParamList } from "../types/navigation";
 import { ProfileScreen } from "../screens/ProfileScreen";
 import { HistoryScreen } from "../screens/HistoryScreen";
 import { History, House, User } from "lucide-react-native";

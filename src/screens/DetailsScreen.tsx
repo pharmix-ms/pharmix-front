@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { MedicineStackParamList } from "../navigation/types";
+import { MedicineStackParamList } from "../types/navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -7,34 +7,21 @@ import { AppButton } from "../components/AppButton";
 import {
   ChevronLeft,
   CircleAlert,
-  CircleQuestionMark,
   RotateCcw,
   Stethoscope,
-  Zap,
 } from "lucide-react-native";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Details">;
 
 const STATUS_CONFIG = {
-  safe: {
-    colors: ["#2ECC71", "#2EB88A"] as const,
-    bgColor: "#2ECC71",
-  },
-  warning: {
-    colors: ["#F4A261", "#FF8000"] as const,
-    bgColor: "#F4A261",
-  },
-  danger: {
-    colors: ["#FF6346", "#E63946"] as const,
-    bgColor: "#FF6346",
-  },
+  safe: { colors: ["#2ECC71", "#2EB88A"] as const },
+  warning: { colors: ["#F4A261", "#FF8000"] as const },
+  danger: { colors: ["#FF6346", "#E63946"] as const },
 };
 
 export function DetailsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-
-  const { status } = route.params;
-
+  const { interaction, status } = route.params;
   const config = STATUS_CONFIG[status];
 
   return (
@@ -64,58 +51,43 @@ export function DetailsScreen({ navigation, route }: Props) {
                 colors={config.colors}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                className="flex-1 gap-2 px-4 py-3"
+                className="flex-1 gap-2 px-4 py-4"
               >
-                <Text className="font-montserrat-bold text-white text-lg">
-                  Duplicidade de anti-hipertensivo
+                <Text className="font-montserrat-bold text-white text-2xl">
+                  {interaction.acao || "Ação não informada"}
                 </Text>
-                <View className="flex-row gap-2 flex-wrap">
-                  <View className="bg-light rounded-full px-4 py-2">
-                    <Text className="font-montserrat-medium text-brand-primary">
-                      IBUPROFENO
-                    </Text>
-                  </View>
-                  <View className="bg-light rounded-full px-4 py-2">
-                    <Text className="font-montserrat-medium text-brand-primary">
-                      PARACETAMOL
-                    </Text>
+                <View className="gap-1">
+                  <Text className="font-montserrat-bold text-white">
+                    Medicamentos envolvidos:
+                  </Text>
+                  <View className="flex-row gap-2 flex-wrap">
+                    {[
+                      interaction.medicamento1.nome,
+                      interaction.medicamento2.nome,
+                    ].map((nome) => (
+                      <View
+                        key={nome}
+                        className="bg-light rounded-full px-4 py-2"
+                      >
+                        <Text className="font-montserrat-medium text-brand-primary">
+                          {nome}
+                        </Text>
+                      </View>
+                    ))}
                   </View>
                 </View>
               </LinearGradient>
             </View>
+
             <View className="bg-white rounded-2xl px-4 py-3 gap-2">
               <View className="items-center flex-row gap-2">
                 <CircleAlert size={24} color={"#344051"} />
                 <Text className="font-montserrat-bold text-brand-primary">
-                  O que acontece?
+                  Mecanismo ou Efeito:
                 </Text>
               </View>
               <Text className="font-montserrat text-brand-secondary">
-                Dois anti-hipertensivos podem causar queda excessiva da pressão
-                arterial.
-              </Text>
-            </View>
-            <View className="bg-white rounded-2xl px-4 py-3 gap-2">
-              <View className="items-center flex-row gap-2">
-                <Zap size={24} color={"#344051"} />
-                <Text className="font-montserrat-bold text-brand-primary">
-                  Possíveis efeitos
-                </Text>
-              </View>
-              <Text className="font-montserrat text-brand-secondary">
-                Tontura • Desmaios • Fraqueza
-              </Text>
-            </View>
-            <View className="bg-white rounded-2xl px-4 py-3 gap-2">
-              <View className="items-center flex-row gap-2">
-                <CircleQuestionMark size={24} color={"#344051"} />
-                <Text className="font-montserrat-bold text-brand-primary">
-                  Por que isso acontece?
-                </Text>
-              </View>
-              <Text className="font-montserrat text-brand-secondary">
-                Ambos reduzem a pressão arterial por mecanismos diferentes, o
-                efeito combinado pode ser excessivo.
+                {interaction.mecanismo_efeito}
               </Text>
             </View>
             <View className="bg-white rounded-2xl px-4 py-3 gap-2">
@@ -126,8 +98,7 @@ export function DetailsScreen({ navigation, route }: Props) {
                 </Text>
               </View>
               <Text className="font-montserrat text-brand-secondary">
-                Se prescrito por um médico, siga as orientações. Não combine por
-                conta própria.
+                {interaction.recomendacoes}
               </Text>
             </View>
           </View>

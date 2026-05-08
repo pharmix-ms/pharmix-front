@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppButton } from "../components/AppButton";
-import { MedicineStackParamList } from "../navigation/types";
+import { MedicineStackParamList } from "../types/navigation";
 
 const { width } = Dimensions.get("window");
 

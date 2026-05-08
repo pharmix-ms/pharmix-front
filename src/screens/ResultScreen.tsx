@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from "react-native";
-import { MedicineStackParamList } from "../navigation/types";
+import { MedicineStackParamList } from "../types/navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -7,12 +7,16 @@ import {
   AlertTriangle,
   Check,
   CheckCircle,
-  ClipboardList,
+  // ClipboardList,
   RotateCcw,
   XCircle,
 } from "lucide-react-native";
 import { AppButton } from "../components/AppButton";
-import { AppInterationItem } from "../components/AppInterationItem";
+import {
+  getInteractionSeverity,
+  getOverallStatus,
+} from "../utils/interactionSeverity";
+import { AppInteractionItem } from "../components/AppInteractionItem";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Result">;
 
@@ -44,11 +48,10 @@ const STATUS_CONFIG = {
 
 export function ResultScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  // useHideTabBar();
-  const { medicines, status } = route.params;
+  const { medicines, interactions } = route.params;
 
+  const status = getOverallStatus(interactions);
   const config = STATUS_CONFIG[status];
-
   const isSafe = status === "safe";
 
   return (
@@ -76,17 +79,20 @@ export function ResultScreen({ navigation, route }: Props) {
                 Medicamentos analisados
               </Text>
               <View className="flex-row gap-2 flex-wrap">
-                {medicines.map((medicine, index) => (
-                  <View key={index} className="bg-light rounded-full px-4 py-2">
+                {medicines.map((medicine) => (
+                  <View
+                    key={medicine.name}
+                    className="bg-light rounded-full px-4 py-2"
+                  >
                     <Text className="font-montserrat-medium text-brand-primary">
-                      {medicine.type}
+                      {medicine.name}
                     </Text>
                   </View>
                 ))}
               </View>
             </View>
             <Text className="font-montserrat-bold text-brand-primary text-lg">
-              Interações encontradas {isSafe ? "" : "(1)"}
+              Interações encontradas {isSafe ? "" : `(${interactions.length})`}
             </Text>
             {isSafe ? (
               <View className="justify-center items-center bg-bg-safe rounded-2xl border-2 border-secondary border-dashed py-9 gap-2">
@@ -95,18 +101,33 @@ export function ResultScreen({ navigation, route }: Props) {
                   <Text className="font-montserrat-bold text-brand-primary text-lg">
                     Nenhuma interação encontrada
                   </Text>
-                  <Text className="font-montserrat-bold text-brand-secondary text-center">
-                    Consumir as medicações em conjunto não causarão efeitos
-                    colaterais
+                  <Text className="font-montserrat-bold text-brand-secondary text-center px-6">
+                    Nenhuma interação conhecida foi encontrada na base
+                    consultada.
                   </Text>
                 </View>
               </View>
             ) : (
-              <AppInterationItem
-                gravity={status}
-                title="Duplicidade de anti-hipertensivo"
-                medication={["IBUPROFENO", "PARACETAMOL"]}
-              />
+              interactions.map((interaction) => {
+                const interactionStatus = getInteractionSeverity(interaction);
+                return (
+                  <AppInteractionItem
+                    key={interaction.id}
+                    gravity={interactionStatus}
+                    title={interaction.acao || "Ação não informada"}
+                    medication={[
+                      interaction.medicamento1.nome,
+                      interaction.medicamento2.nome,
+                    ]}
+                    onPress={() =>
+                      navigation.navigate("Details", {
+                        interaction,
+                        status: interactionStatus,
+                      })
+                    }
+                  />
+                );
+              })
             )}
           </View>
         </ScrollView>
@@ -118,14 +139,16 @@ export function ResultScreen({ navigation, route }: Props) {
             icon={RotateCcw}
             gradientColors={isSafe ? config.colors : undefined}
           />
-          {!isSafe && (
+          {/* {!isSafe && (
             <AppButton
               title="Ver detalhes completos"
-              onPress={() => navigation.navigate("Details", { status })}
+              onPress={() =>
+                navigation.navigate("Details", { interaction, status })
+              }
               icon={ClipboardList}
               gradientColors={config.colors}
             />
-          )}
+          )} */}
         </View>
       </View>
     </View>

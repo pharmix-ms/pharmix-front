@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { MedicineStackParamList } from "./types";
+import { MedicineStackParamList } from "../types/navigation";
 import { MedicineScreen } from "../screens/MedicineScreen";
 import { ConfirmScreen } from "../screens/ConfirmScreen";
 import { ResultScreen } from "../screens/ResultScreen";

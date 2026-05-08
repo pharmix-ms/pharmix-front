@@ -1,21 +1,23 @@
-import { View, Text } from "react-native";
-import { MedicineStackParamList } from "../navigation/types";
+import { View, Text, ActivityIndicator } from "react-native";
+import { MedicineStackParamList } from "../types/navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppButton } from "../components/AppButton";
 import { Check, Microscope } from "lucide-react-native";
 import { GradientWrapper } from "../components/GradientWrapper";
+import { useMedicineInteractions } from "../hooks/useMedicineInteractions";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Confirm">;
 
 export function ConfirmScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const { medicines } = route.params;
+  const { analyze, isLoading, error } = useMedicineInteractions();
 
-  function getRandomStatus(): "safe" | "warning" | "danger" {
-    const options = ["safe", "warning", "danger"] as const;
-    return options[Math.floor(Math.random() * options.length)];
+  async function handleConfirm() {
+    const interactions = await analyze(medicines);
+    navigation.navigate("Result", { medicines, interactions });
   }
 
   return (
@@ -67,20 +69,25 @@ export function ConfirmScreen({ navigation, route }: Props) {
             farmacêutico para orientação personalizada.
           </Text>
         </View>
+
+        {error && (
+          <Text className="font-montserrat text-center text-red-500">
+            {error}
+          </Text>
+        )}
+
         <AppButton
-          title="Confirmar Análise"
-          onPress={() =>
-            navigation.navigate("Result", {
-              medicines: medicines,
-              status: getRandomStatus(), // ← mock, depois vira resposta da API
-            })
-          }
-          icon={Check}
+          title={isLoading ? "Analisando..." : "Confirmar Análise"}
+          onPress={handleConfirm}
+          icon={isLoading ? undefined : Check}
+          disabled={isLoading}
         />
+        {isLoading && <ActivityIndicator color="#00B4D8" />}
         <AppButton
           title="Voltar"
           variant="outline"
           onPress={() => navigation.goBack()}
+          disabled={isLoading}
         />
       </View>
     </View>

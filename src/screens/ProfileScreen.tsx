@@ -7,7 +7,7 @@ import { AppHealthAccordion } from "../components/AppHealthAccordion";
 import { ChevronRight } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { BottomTabParamList } from "../navigation/types";
+import { BottomTabParamList } from "../types/navigation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useHealthProfile } from "../hooks/UseHealthProfile";
