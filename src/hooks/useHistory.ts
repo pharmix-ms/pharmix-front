@@ -10,6 +10,7 @@ export interface HistoryEntry {
   date: string;
   interaction: ApiInteracao;
   status: "danger" | "safe" | "warning";
+  medicines?: string[];
 }
 
 const HISTORY_KEY = "@medicine_history";
@@ -46,13 +47,22 @@ export function useHistory() {
               id: `${Date.now()}-safe`,
               date: now,
               status: "safe",
+              medicines,
               interaction: {
                 id: -1,
                 acao: "Combinação Segura",
                 mecanismo_efeito: "Nenhuma interação conhecida foi encontrada.",
                 recomendacoes: "Nenhuma recomendação especial necessária.",
-                medicamento1: { nome: medicines[0] ?? "" },
-                medicamento2: { nome: medicines.slice(1).join(" + ") ?? "" },
+                medicamento1: {
+                  id: -1,
+                  nome: medicines[0] ?? "",
+                  indicacoes: "",
+                },
+                medicamento2: {
+                  id: -1,
+                  nome: medicines[1] ?? "",
+                  indicacoes: "",
+                },
               },
             },
           ];

@@ -21,8 +21,12 @@ const STATUS_CONFIG = {
 
 export function DetailsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const { interaction, status } = route.params;
+  const { interaction, status, medicines, fromHistory } = route.params;
   const config = STATUS_CONFIG[status];
+
+  const medicineList = medicines?.flatMap((m) =>
+    m.includes(" + ") ? m.split(" + ") : [m],
+  ) ?? [interaction.medicamento1.nome, interaction.medicamento2.nome];
 
   return (
     <View className="flex-1">
@@ -61,10 +65,7 @@ export function DetailsScreen({ navigation, route }: Props) {
                     Medicamentos envolvidos:
                   </Text>
                   <View className="flex-row gap-2 flex-wrap">
-                    {[
-                      interaction.medicamento1.nome,
-                      interaction.medicamento2.nome,
-                    ].map((nome) => (
+                    {medicineList.map((nome) => (
                       <View
                         key={nome}
                         className="bg-light rounded-full px-4 py-2"
@@ -103,14 +104,16 @@ export function DetailsScreen({ navigation, route }: Props) {
             </View>
           </View>
         </ScrollView>
-        <View className="gap-3 pt-5">
-          <AppButton
-            title="Nova Análise"
-            onPress={() => navigation.popToTop()}
-            icon={RotateCcw}
-            gradientColors={config.colors}
-          />
-        </View>
+        {!fromHistory && (
+          <View className="gap-3 pt-5">
+            <AppButton
+              title="Nova Análise"
+              onPress={() => navigation.popToTop()}
+              icon={RotateCcw}
+              gradientColors={config.colors}
+            />
+          </View>
+        )}
       </View>
     </View>
   );

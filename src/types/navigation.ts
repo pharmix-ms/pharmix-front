@@ -17,7 +17,12 @@ export type MedicineStackParamList = {
   Camera: undefined;
   Confirm: { medicines: Medicine[] };
   Result: { medicines: Medicine[]; interactions: ApiInteracao[] };
-  Details: { interaction: ApiInteracao; status: "safe" | "warning" | "danger" };
+  Details: {
+    interaction: ApiInteracao;
+    status: "safe" | "warning" | "danger";
+    medicines?: string[];
+    fromHistory?: boolean;
+  };
 };
 
 export type HistoryStackParamList = {
@@ -25,5 +30,7 @@ export type HistoryStackParamList = {
   Details: {
     interaction: ApiInteracao;
     status: "danger" | "safe" | "warning";
+    medicines?: string[];
+    fromHistory?: boolean;
   };
 };

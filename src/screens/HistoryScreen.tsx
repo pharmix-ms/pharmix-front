@@ -139,15 +139,20 @@ export function HistoryScreen({ navigation }: Props) {
                       key={entry.id}
                       title={entry.interaction.acao || "Ação não informada"}
                       date={formatTime(entry.date)}
-                      medication={[
-                        entry.interaction.medicamento1.nome,
-                        entry.interaction.medicamento2.nome,
-                      ].join(" + ")}
+                      medication={
+                        entry.medicines?.join(" + ") ??
+                        [
+                          entry.interaction.medicamento1.nome,
+                          entry.interaction.medicamento2.nome,
+                        ].join(" + ")
+                      }
                       gravity={entry.status}
                       onPress={() =>
                         navigation.navigate("Details", {
                           interaction: entry.interaction,
                           status: entry.status,
+                          medicines: entry.medicines,
+                          fromHistory: true,
                         })
                       }
                     />

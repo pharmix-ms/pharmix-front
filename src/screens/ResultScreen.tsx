@@ -141,6 +141,10 @@ export function ResultScreen({ navigation, route }: Props) {
                       navigation.navigate("Details", {
                         interaction,
                         status: interactionStatus,
+                        medicines: [
+                          interaction.medicamento1.nome,
+                          interaction.medicamento2.nome,
+                        ],
                       })
                     }
                   />
