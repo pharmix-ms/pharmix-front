@@ -1,4 +1,4 @@
-import { Medicine } from "../hooks/UseMedicineSearch";
+import { Medicine } from "../hooks/useMedicineSearch";
 import { ApiInteracao } from "./api";
 
 export type RootStackParamList = {
@@ -18,4 +18,12 @@ export type MedicineStackParamList = {
   Confirm: { medicines: Medicine[] };
   Result: { medicines: Medicine[]; interactions: ApiInteracao[] };
   Details: { interaction: ApiInteracao; status: "safe" | "warning" | "danger" };
+};
+
+export type HistoryStackParamList = {
+  HistoryList: undefined;
+  Details: {
+    interaction: ApiInteracao;
+    status: "danger" | "safe" | "warning";
+  };
 };

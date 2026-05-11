@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   Check,
   CheckCircle,
-  // ClipboardList,
   RotateCcw,
   XCircle,
 } from "lucide-react-native";
@@ -17,6 +16,8 @@ import {
   getOverallStatus,
 } from "../utils/interactionSeverity";
 import { AppInteractionItem } from "../components/AppInteractionItem";
+import { useEffect, useRef } from "react";
+import { useHistory } from "../hooks/useHistory";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Result">;
 
@@ -53,6 +54,23 @@ export function ResultScreen({ navigation, route }: Props) {
   const status = getOverallStatus(interactions);
   const config = STATUS_CONFIG[status];
   const isSafe = status === "safe";
+
+  const { saveInteractions } = useHistory();
+  const savedRef = useRef(false);
+
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+
+    const medicineNames = medicines.map((m) => m.name);
+
+    const toSave =
+      status === "safe"
+        ? []
+        : interactions.filter((i) => getInteractionSeverity(i) !== "safe");
+
+    saveInteractions(toSave, medicineNames);
+  }, [interactions, status, medicines, saveInteractions]);
 
   return (
     <View className="flex-1">
@@ -139,16 +157,6 @@ export function ResultScreen({ navigation, route }: Props) {
             icon={RotateCcw}
             gradientColors={isSafe ? config.colors : undefined}
           />
-          {/* {!isSafe && (
-            <AppButton
-              title="Ver detalhes completos"
-              onPress={() =>
-                navigation.navigate("Details", { interaction, status })
-              }
-              icon={ClipboardList}
-              gradientColors={config.colors}
-            />
-          )} */}
         </View>
       </View>
     </View>

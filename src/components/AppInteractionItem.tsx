@@ -1,5 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { AppBadge } from "./AppBadge";
+import { ChevronRight } from "lucide-react-native";
 
 interface AppInteractionItemProps {
   title: string;
@@ -25,17 +26,20 @@ export function AppInteractionItem({
       activeOpacity={0.85}
       onPress={onPress}
       disabled={!onPress}
-      className={`bg-white rounded-2xl border-l-8 ${borderColor} p-4 gap-1 flex-col`}
+      className={`bg-white rounded-2xl border-l-8 ${borderColor} p-4 pr-2 gap-2 flex-row items-center justify-between`}
     >
-      <View className="flex-row justify-between gap-2">
-        <Text className="text-brand-primary font-montserrat-bold flex-1">
-          {title}
+      <View className="flex-1 gap-1">
+        <View className="flex-row justify-between gap-2">
+          <Text className="text-brand-primary font-montserrat-bold flex-1">
+            {title}
+          </Text>
+          <AppBadge variant={gravity} />
+        </View>
+        <Text className="text-brand-secondary font-montserrat-semibold">
+          {medication.join(" + ")}
         </Text>
-        <AppBadge variant={gravity} />
       </View>
-      <Text className="text-brand-secondary font-montserrat-semibold">
-        {medication.join(" + ")}
-      </Text>
+      {onPress && <ChevronRight size={26} color="#9AA3AF" />}
     </TouchableOpacity>
   );
 }

@@ -33,7 +33,7 @@ export function useMedicineSearch() {
       .filter((medicine) => medicine.toLowerCase().includes(normalizedQuery))
       .map((medicine) => ({
         name: medicine,
-        type: "Medicamento",
+        type: "Princípio Ativo",
       }))
       .filter(
         (m) =>

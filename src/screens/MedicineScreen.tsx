@@ -17,7 +17,7 @@ import { Lightbulb, Pill, Scan, Search } from "lucide-react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppButton } from "../components/AppButton";
 import { AppMedicineItem } from "../components/AppMedicineItem";
-import { useMedicineSearch } from "../hooks/UseMedicineSearch";
+import { useMedicineSearch } from "../hooks/useMedicineSearch";
 import { useRef, useState } from "react";
 import { View as RNView } from "react-native";
 // import { useHealthProfile } from "../hooks/UseHealthProfile";

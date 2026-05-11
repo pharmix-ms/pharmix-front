@@ -10,7 +10,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { BottomTabParamList } from "../types/navigation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { useHealthProfile } from "../hooks/UseHealthProfile";
+import { useHealthProfile } from "../hooks/useHealthProfile";
 import {
   healthConditionCategories,
   drugAllergyCategories,

@@ -1,12 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomTabParamList } from "../types/navigation";
 import { ProfileScreen } from "../screens/ProfileScreen";
-import { HistoryScreen } from "../screens/HistoryScreen";
 import { History, House, User } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GradientWrapper } from "../components/GradientWrapper";
 import { Text } from "react-native";
 import { MedicineStack } from "./MedicineStack";
+import { HistoryStack } from "./HistoryStack";
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -76,7 +76,7 @@ export function BottomTabs() {
       />
       <Tab.Screen
         name="History"
-        component={HistoryScreen}
+        component={HistoryStack}
         options={{ title: "Histórico" }}
       />
     </Tab.Navigator>

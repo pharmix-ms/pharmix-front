@@ -3,7 +3,7 @@
 
 import { useCallback, useState } from "react";
 import { fetchInteracoes } from "../services/api";
-import { Medicine } from "./UseMedicineSearch";
+import { Medicine } from "./useMedicineSearch";
 import { ApiInteracao } from "../types/api";
 
 interface InteractionsState {
