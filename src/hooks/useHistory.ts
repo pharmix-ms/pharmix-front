@@ -78,7 +78,9 @@ export function useHistory() {
         const updated = [...newEntries, ...existing];
         await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
         setHistory(updated);
-      } catch {}
+      } catch {
+        // falha silenciosa, não salva nem atualiza o estado
+      }
     },
     [],
   );

@@ -5,7 +5,7 @@ export function UseHideTabBar() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const parent = navigation.getParent(); // pega o BottomTab pai
+    const parent = navigation.getParent();
     parent?.setOptions({ tabBarStyle: { display: "none" } });
 
     return () => {
@@ -14,7 +14,7 @@ export function UseHideTabBar() {
           backgroundColor: "#FFFFFF",
           borderTopColor: "#CED2DA",
           borderTopWidth: 2,
-          height: 70, // sem o insets aqui, veja nota abaixo
+          height: 70,
           paddingTop: 10,
         },
       });
