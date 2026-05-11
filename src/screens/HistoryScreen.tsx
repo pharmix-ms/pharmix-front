@@ -66,12 +66,6 @@ export function HistoryScreen({ navigation }: Props) {
   const grouped = groupByDay(history);
   const days = Object.keys(grouped);
 
-  useEffect(() => {
-    AsyncStorage.getItem("@medicine_history").then((raw) => {
-      console.log("History:", JSON.parse(raw ?? "[]"));
-    });
-  }, []);
-
   return (
     <View className="flex-1">
       <LinearGradient

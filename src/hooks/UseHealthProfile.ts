@@ -38,7 +38,7 @@ export function useHealthProfile() {
           setProfile(parsed);
           savedProfile.current = parsed;
         }
-        console.log("health_profile:", raw);
+        // console.log("health_profile:", raw);
       } catch {
         // sem perfil salvo, usa o padrão
       } finally {
