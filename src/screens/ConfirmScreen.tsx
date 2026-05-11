@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text } from "react-native";
 import { MedicineStackParamList } from "../types/navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -81,8 +81,8 @@ export function ConfirmScreen({ navigation, route }: Props) {
           onPress={handleConfirm}
           icon={isLoading ? undefined : Check}
           disabled={isLoading}
+          isLoading={isLoading}
         />
-        {isLoading && <ActivityIndicator color="#00B4D8" />}
         <AppButton
           title="Voltar"
           variant="outline"

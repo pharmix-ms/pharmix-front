@@ -36,14 +36,15 @@ export function AppButton({
   const iconColor = variant === "primary" ? "#FFF" : "#344051";
 
   const content = () => {
-    if (isLoading) {
-      return (
-        <ActivityIndicator color={variant === "primary" ? "#FFF" : "#00B4D8"} />
-      );
-    }
-
     const innerContent = (
       <View className="flex-row items-center justify-center gap-2">
+        {isLoading && (
+          <ActivityIndicator
+            size="small"
+            color={variant === "primary" ? "#FFF" : "#00B4D8"}
+          />
+        )}
+
         <Text
           className={`font-montserrat-bold text-lg shrink ${
             variant === "primary" ? "text-white" : "text-brand-primary"
@@ -52,7 +53,8 @@ export function AppButton({
         >
           {title}
         </Text>
-        {Icon && <Icon size={20} color={iconColor} />}
+
+        {!isLoading && Icon && <Icon size={20} color={iconColor} />}
       </View>
     );
 
