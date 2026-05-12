@@ -4,30 +4,25 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
-  FlatList,
-  ActivityIndicator,
-  Modal,
 } from "react-native";
 import { MedicineStackParamList } from "../types/navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AppInput } from "../components/AppInput";
-import { Lightbulb, Pill, Scan, Search } from "lucide-react-native";
+import { CircleX, Lightbulb, Pill, Scan, Search } from "lucide-react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppButton } from "../components/AppButton";
 import { AppMedicineItem } from "../components/AppMedicineItem";
 import { useMedicineSearch } from "../hooks/useMedicineSearch";
-import { useRef, useState } from "react";
-import { View as RNView } from "react-native";
-// import { useHealthProfile } from "../hooks/UseHealthProfile";
+import { useCallback, useRef } from "react";
+import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Medicine">;
 
 export function MedicineScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const inputRef = useRef<RNView>(null);
-  const [inputBottom, setInputBottom] = useState(0);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dropdownRef = useRef<any>(null);
 
   const {
     query,
@@ -40,10 +35,30 @@ export function MedicineScreen({ navigation }: Props) {
     canAnalyze,
   } = useMedicineSearch();
 
-  // const { profile } = useHealthProfile();
+  const dataSet = suggestions.map((medicine) => ({
+    id: `${medicine.name}|||${medicine.type}`,
+    title: medicine.name,
+  }));
+
+  const handleSelectItem = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (item: any) => {
+      if (!item?.id) return;
+
+      const [name, type] = (item.id as string).split("|||");
+      const medicine = suggestions.find(
+        (m) => m.name === name && m.type === type,
+      );
+      if (medicine) {
+        addMedicine(medicine);
+        dropdownRef.current?.clear();
+        setQuery("");
+      }
+    },
+    [suggestions, addMedicine, setQuery],
+  );
 
   function handleConfirm() {
-    // console.log(profile);
     navigation.navigate("Confirm", { medicines: selectedMedicines });
   }
 
@@ -68,92 +83,104 @@ export function MedicineScreen({ navigation }: Props) {
       </LinearGradient>
 
       <View className="flex-1 p-5 bg-bg-light gap-3">
-        <View
-          ref={inputRef}
-          className="z-10"
-          onLayout={() => {
-            inputRef.current?.measureInWindow((x, y, width, height) => {
-              setInputBottom(y + height + 4); // y já é absoluto da tela
-            });
+        <AutocompleteDropdown
+          ref={dropdownRef}
+          clearOnFocus={false}
+          closeOnBlur={true}
+          closeOnSubmit={true}
+          onSelectItem={handleSelectItem}
+          onChangeText={setQuery}
+          dataSet={dataSet}
+          loading={isLoading}
+          debounce={300}
+          containerStyle={{ zIndex: 10 }}
+          inputContainerStyle={{
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: "#CED2DA",
+            borderRadius: 16,
+            paddingHorizontal: 2,
+            height: 48,
           }}
-        >
-          <AppInput
-            placeholder="Buscar medicamento"
-            icon={Search}
-            value={query}
-            onChangeText={setQuery}
-          />
-
-          {/* Dropdown de sugestões */}
-          {(suggestions.length > 0 || isLoading) && (
-            <Modal
-              visible={suggestions.length > 0 || isLoading}
-              transparent
-              animationType="none"
-              onRequestClose={() => setQuery("")}
-            >
-              {/* Overlay transparente para fechar ao clicar fora */}
-              <Pressable style={{ flex: 1 }} onPress={() => setQuery("")}>
-                <View
-                  style={{
-                    position: "absolute",
-                    top: inputBottom,
-                    left: 20,
-                    right: 20,
-                    backgroundColor: "white",
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: "#e5e7eb",
-                    maxHeight: 220,
-                    elevation: 10,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.15,
-                    shadowRadius: 4,
-                    zIndex: 999,
-                  }}
-                >
-                  {isLoading ? (
-                    <View className="py-4 items-center">
-                      <ActivityIndicator color="#00B4D8" />
-                    </View>
-                  ) : (
-                    <FlatList
-                      data={suggestions}
-                      keyExtractor={(item) => `${item.name}-${item.type}`}
-                      keyboardShouldPersistTaps="handled"
-                      showsVerticalScrollIndicator={false}
-                      renderItem={({ item }) => (
-                        <Pressable
-                          onPress={() => addMedicine(item)}
-                          className="flex-row items-center gap-3 px-4 py-3 border-b border-border-gray active:bg-bg-info"
-                        >
-                          <Pill size={18} color="#00B4D8" />
-                          <View>
-                            <Text className="font-montserrat-medium text-brand-primary">
-                              {item.name}
-                            </Text>
-                            <Text className="font-montserrat text-brand-secondary text-xs">
-                              {item.type}
-                            </Text>
-                          </View>
-                        </Pressable>
-                      )}
-                    />
-                  )}
+          textInputProps={{
+            placeholder: "Buscar medicamento",
+            placeholderTextColor: "#637083",
+            style: {
+              fontFamily: "Montserrat-Regular",
+              fontSize: 16,
+              color: "#1a2332",
+              flex: 1,
+            },
+          }}
+          rightButtonsContainerStyle={{
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+          RightIconComponent={<Search size={24} color="#637083" />}
+          showChevron={false}
+          showClear={query.length > 0}
+          emptyResultText="Não encontrado"
+          ClearIconComponent={<CircleX size={24} color="#E63946" />}
+          suggestionsListContainerStyle={{
+            backgroundColor: "white",
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: "#CED2DA",
+            marginTop: 4,
+            elevation: 10,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.12,
+            shadowRadius: 6,
+          }}
+          renderItem={(item) => {
+            const type = item.id?.split("|||")[1];
+            return (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 12,
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#f3f4f6",
+                }}
+              >
+                <Pill size={18} color="#00B4D8" />
+                <View>
+                  <Text
+                    style={{
+                      fontFamily: "Montserrat-Medium",
+                      color: "#1a2332",
+                      fontSize: 14,
+                    }}
+                  >
+                    {item.title ?? ""}
+                  </Text>
+                  {type ? (
+                    <Text
+                      style={{
+                        fontFamily: "Montserrat-Regular",
+                        color: "#637083",
+                        fontSize: 12,
+                      }}
+                    >
+                      {type}
+                    </Text>
+                  ) : null}
                 </View>
-              </Pressable>
-            </Modal>
-          )}
-        </View>
-        {/* <AppButton
-          title="Escanear medicamentos"
-          onPress={() => navigation.navigate("Camera")}
-          icon={Camera}
-        /> */}
+              </View>
+            );
+          }}
+        />
+
         <Text className="font-montserrat-bold text-brand-primary text-lg">
           Medicamentos Adicionados
         </Text>
+
         <ScrollView
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -172,7 +199,6 @@ export function MedicineScreen({ navigation }: Props) {
                 </View>
               </View>
             ) : (
-              /* Lista de medicamentos adicionados */
               selectedMedicines.map((medicine) => (
                 <AppMedicineItem
                   key={`${medicine.name}-${medicine.type}`}
@@ -182,6 +208,7 @@ export function MedicineScreen({ navigation }: Props) {
                 />
               ))
             )}
+
             <View className="flex-1 flex-row items-center px-4 py-3 gap-4">
               <Lightbulb size={24} color={"#457B9D"} />
               <Text className="font-montserrat-medium text-brand-info">
@@ -189,6 +216,7 @@ export function MedicineScreen({ navigation }: Props) {
                 interações.
               </Text>
             </View>
+
             <AppButton
               title="Analisar Combinação"
               onPress={handleConfirm}

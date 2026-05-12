@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import "./global.css";
+import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 import { NavigationContainer } from "@react-navigation/native";
 import { RootStack } from "./src/navigation/RootStack";
 import { useFonts } from "expo-font";
@@ -52,8 +53,10 @@ export default function App() {
       onLayout={onLayoutRootView}
     >
       <NavigationContainer>
-        <StatusBar style="light" />
-        <RootStack />
+        <AutocompleteDropdownContextProvider>
+          <StatusBar style="light" />
+          <RootStack />
+        </AutocompleteDropdownContextProvider>
       </NavigationContainer>
     </SafeAreaProvider>
   );
