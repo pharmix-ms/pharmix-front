@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { AppBadge } from "./AppBadge";
-import { ChevronRight, Clock2 } from "lucide-react-native";
+import { ChevronRight } from "lucide-react-native";
 
 interface AppHistoryItemProps {
   title: string;

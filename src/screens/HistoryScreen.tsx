@@ -14,8 +14,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HistoryStackParamList } from "../types/navigation";
 import { HistoryEntry, useHistory } from "../hooks/useHistory";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback } from "react";
 
 type Props = NativeStackScreenProps<HistoryStackParamList, "HistoryList">;
 
