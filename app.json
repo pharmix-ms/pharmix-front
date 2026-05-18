@@ -16,7 +16,12 @@
         "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "io.expo.pharmix"
     },
     "web": {
       "bundler": "metro",
@@ -38,12 +43,8 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#232323",
+          "backgroundColor": "#F8FAFC",
           "image": "./assets/splash-icon.png",
-          "dark": {
-            "image": "./assets/splash-icon-dark.png",
-            "backgroundColor": "#000000"
-          },
           "imageWidth": 200
         }
       ],
@@ -53,6 +54,11 @@
           "cameraPermission": "Permitir acesso à câmera para escanear medicamentos."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "003377e5-9377-43d7-b6cd-c3fd32d7f326"
+      }
+    }
   }
 }
