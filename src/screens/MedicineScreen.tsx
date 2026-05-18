@@ -75,10 +75,11 @@ export function MedicineScreen({ navigation }: Props) {
         className="gap-2"
       >
         <Text className="font-montserrat-bold text-white text-2xl">
-          Meus Medicamentos
+          Análise de interações
         </Text>
         <Text className="font-montserrat text-white text-base">
-          Adicione os medicamentos e analise suas interações.
+          Adicione os princípios ativos de seus medicamentos e analise suas
+          interações.
         </Text>
       </LinearGradient>
 
@@ -103,7 +104,7 @@ export function MedicineScreen({ navigation }: Props) {
             height: 48,
           }}
           textInputProps={{
-            placeholder: "Buscar medicamento",
+            placeholder: "Buscar princípio ativo",
             placeholderTextColor: "#637083",
             style: {
               fontFamily: "Montserrat-Regular",
@@ -178,7 +179,7 @@ export function MedicineScreen({ navigation }: Props) {
         />
 
         <Text className="font-montserrat-bold text-brand-primary text-lg">
-          Medicamentos Adicionados
+          Princípios Ativos Adicionados
         </Text>
 
         <ScrollView
@@ -191,10 +192,10 @@ export function MedicineScreen({ navigation }: Props) {
                 <Pill size={42} color={"#344051"} />
                 <View className="items-center">
                   <Text className="font-montserrat-bold text-brand-primary text-lg">
-                    Nenhum medicamento adicionado
+                    Nenhum princípio ativo adicionado
                   </Text>
                   <Text className="font-montserrat-bold text-brand-secondary">
-                    Utilize a busca para adicionar medicamentos
+                    Utilize a busca para adicionar princípios ativos
                   </Text>
                 </View>
               </View>
@@ -212,7 +213,7 @@ export function MedicineScreen({ navigation }: Props) {
             <View className="flex-1 flex-row items-center px-4 py-3 gap-4">
               <Lightbulb size={24} color={"#457B9D"} />
               <Text className="font-montserrat-medium text-brand-info">
-                Adicione pelo menos 2 medicamentos para verificar possíveis
+                Adicione pelo menos 2 princípios ativos para verificar possíveis
                 interações.
               </Text>
             </View>
