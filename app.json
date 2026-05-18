@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "pharmix",
+    "name": "Pharmix",
     "slug": "pharmix",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,7 +12,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/splash-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true,
