@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image } from "react-native";
+import { View, Text, Image } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
 import { LinearGradient } from "expo-linear-gradient";
@@ -47,10 +47,12 @@ export function HomeScreen({ navigation }: Props) {
             variant="ghost"
             title="Entendi, vamos começar"
             icon={ChevronRight}
-            onPress={() => navigation.navigate("MainTabs")}
+            onPress={() =>
+              navigation.navigate("MainTabs", { screen: "MedicineStack" })
+            }
             className="w-full"
           />
-          <Pressable
+          {/* <Pressable
             onPress={() =>
               navigation.navigate("MainTabs", { screen: "MedicineStack" })
             }
@@ -58,7 +60,7 @@ export function HomeScreen({ navigation }: Props) {
             <Text className="underline font-montserrat text-white text-lg p-3">
               Pular e usar sem perfil
             </Text>
-          </Pressable>
+          </Pressable> */}
         </View>
       </View>
     </LinearGradient>

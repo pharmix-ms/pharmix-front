@@ -14,13 +14,15 @@ export interface HistoryEntry {
 }
 
 const HISTORY_KEY = "@medicine_history";
+const MAX_HISTORY = 100;
 
 export function useHistory() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const load = useCallback(async () => {
-    setIsLoading(true);
+    setIsLoading((prev) => (history.length === 0 ? true : prev));
+
     try {
       const raw = await AsyncStorage.getItem(HISTORY_KEY);
       setHistory(raw ? JSON.parse(raw) : []);
@@ -29,7 +31,7 @@ export function useHistory() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [history.length]);
 
   const saveInteractions = useCallback(
     async (interactions: ApiInteracao[], medicines?: string[]) => {
@@ -75,7 +77,7 @@ export function useHistory() {
           }));
         }
 
-        const updated = [...newEntries, ...existing];
+        const updated = [...newEntries, ...existing].slice(0, MAX_HISTORY);
         await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
         setHistory(updated);
       } catch {

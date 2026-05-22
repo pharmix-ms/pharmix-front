@@ -25,14 +25,14 @@ export function useMedicineInteractions() {
       const nomes = medicines.map((m) => m.name);
       const interacoes = await fetchInteracoes(nomes);
       setState({ data: interacoes, isLoading: false, error: null });
-      return interacoes; // <-- retorna para o caller
+      return interacoes;
     } catch {
       setState({
         data: [],
         isLoading: false,
         error: "Não foi possível carregar as interações.",
       });
-      return [];
+      return null;
     }
   }, []);
 

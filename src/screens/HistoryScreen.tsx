@@ -1,10 +1,10 @@
 import {
   View,
   Text,
-  ScrollView,
   Alert,
   ActivityIndicator,
   TouchableOpacity,
+  SectionList,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,7 +14,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HistoryStackParamList } from "../types/navigation";
 import { HistoryEntry, useHistory } from "../hooks/useHistory";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 
 type Props = NativeStackScreenProps<HistoryStackParamList, "HistoryList">;
 
@@ -41,6 +41,24 @@ function formatTime(isoDate: string): string {
   });
 }
 
+const HistoryListItem = memo(
+  ({ entry, onPress }: { entry: HistoryEntry; onPress: () => void }) => (
+    <AppHistoryItem
+      title={entry.interaction.acao || "Ação não informada"}
+      date={formatTime(entry.date)}
+      medication={
+        entry.medicines?.join(" + ") ??
+        [
+          entry.interaction.medicamento1.nome,
+          entry.interaction.medicamento2.nome,
+        ].join(" + ")
+      }
+      gravity={entry.status}
+      onPress={onPress}
+    />
+  ),
+);
+
 export function HistoryScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { history, isLoading, clear, reload } = useHistory();
@@ -62,8 +80,39 @@ export function HistoryScreen({ navigation }: Props) {
     );
   };
 
-  const grouped = groupByDay(history);
-  const days = Object.keys(grouped);
+  const sections = useMemo(() => {
+    const grouped = groupByDay(history);
+    return Object.keys(grouped).map((day) => ({
+      title: day,
+      data: grouped[day],
+    }));
+  }, [history]);
+
+  const renderItem = useCallback(
+    ({ item: entry }: { item: HistoryEntry }) => (
+      <HistoryListItem
+        entry={entry}
+        onPress={() =>
+          navigation.navigate("Details", {
+            interaction: entry.interaction,
+            status: entry.status,
+            medicines: entry.medicines,
+            fromHistory: true,
+          })
+        }
+      />
+    ),
+    [navigation],
+  );
+
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: { title: string } }) => (
+      <Text className="font-montserrat-semibold text-brand-secondary">
+        {section.title}
+      </Text>
+    ),
+    [],
+  );
 
   return (
     <View className="flex-1">
@@ -83,8 +132,14 @@ export function HistoryScreen({ navigation }: Props) {
         </Text>
       </LinearGradient>
 
-      <ScrollView showsVerticalScrollIndicator={false} className="bg-bg-light">
-        <View className="flex-1 p-5 bg-bg-light gap-3">
+      <SectionList
+        sections={sections}
+        keyExtractor={(entry) => entry.id}
+        className="bg-bg-light"
+        contentContainerStyle={{ padding: 18, gap: 12, flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        // Header com título e botão de limpar
+        ListHeaderComponent={
           <View className="flex-row justify-between">
             <Text className="font-montserrat-bold text-brand-primary text-lg">
               Interações Analisadas
@@ -101,60 +156,32 @@ export function HistoryScreen({ navigation }: Props) {
               </TouchableOpacity>
             )}
           </View>
-
-          {isLoading && (
+        }
+        // Estado vazio
+        ListEmptyComponent={
+          isLoading ? (
             <View className="items-center py-10">
               <ActivityIndicator size="large" color="#006AFF" />
             </View>
-          )}
-
-          {!isLoading && history.length === 0 && (
-            <View className="items-center justify-center py-16 gap-2">
-              <ClockFading size={42} color="#344051" />
-              <Text className="font-montserrat-bold text-brand-primary text-center">
-                Nenhuma análise realizada ainda.
-              </Text>
-              <Text className="font-montserrat text-brand-secondary text-center">
-                Suas análises aparecerão aqui.
-              </Text>
-            </View>
-          )}
-
-          {!isLoading &&
-            days.map((day) => (
-              <View key={day} className="gap-3">
-                <Text className="font-montserrat-semibold text-brand-secondary">
-                  {day}
+          ) : (
+            <View className="items-center justify-center py-16 gap-4">
+              <ClockFading size={52} color="#344051" />
+              <View>
+                <Text className="font-montserrat-bold text-brand-primary text-center">
+                  Nenhuma análise realizada ainda.
                 </Text>
-                <View className="gap-3">
-                  {grouped[day].map((entry) => (
-                    <AppHistoryItem
-                      key={entry.id}
-                      title={entry.interaction.acao || "Ação não informada"}
-                      date={formatTime(entry.date)}
-                      medication={
-                        entry.medicines?.join(" + ") ??
-                        [
-                          entry.interaction.medicamento1.nome,
-                          entry.interaction.medicamento2.nome,
-                        ].join(" + ")
-                      }
-                      gravity={entry.status}
-                      onPress={() =>
-                        navigation.navigate("Details", {
-                          interaction: entry.interaction,
-                          status: entry.status,
-                          medicines: entry.medicines,
-                          fromHistory: true,
-                        })
-                      }
-                    />
-                  ))}
-                </View>
+                <Text className="font-montserrat text-brand-secondary text-center">
+                  Suas análises aparecerão aqui.
+                </Text>
               </View>
-            ))}
-        </View>
-      </ScrollView>
+            </View>
+          )
+        }
+        renderSectionHeader={renderSectionHeader}
+        renderItem={renderItem}
+        ItemSeparatorComponent={() => <View />}
+        SectionSeparatorComponent={() => <View />}
+      />
     </View>
   );
 }

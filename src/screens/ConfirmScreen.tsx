@@ -17,6 +17,9 @@ export function ConfirmScreen({ navigation, route }: Props) {
 
   async function handleConfirm() {
     const interactions = await analyze(medicines);
+
+    if (interactions === null) return;
+
     navigation.navigate("Result", { medicines, interactions });
   }
 

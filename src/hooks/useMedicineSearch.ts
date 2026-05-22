@@ -14,6 +14,7 @@ export function useMedicineSearch() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Medicine[]>([]);
   const [selectedMedicines, setSelectedMedicines] = useState<Medicine[]>([]);
+  const [dropdownKey, setDropdownKey] = useState(0);
 
   const selectedRef = useRef(selectedMedicines);
 
@@ -63,6 +64,10 @@ export function useMedicineSearch() {
     );
   }, []);
 
+  const resetDropdown = useCallback(() => {
+    setDropdownKey((k) => k + 1);
+  }, []);
+
   return {
     query,
     setQuery,
@@ -72,5 +77,7 @@ export function useMedicineSearch() {
     addMedicine,
     removeMedicine,
     canAnalyze: selectedMedicines.length >= 2,
+    dropdownKey,
+    resetDropdown,
   };
 }

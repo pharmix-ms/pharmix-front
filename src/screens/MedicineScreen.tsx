@@ -33,6 +33,8 @@ export function MedicineScreen({ navigation }: Props) {
     addMedicine,
     removeMedicine,
     canAnalyze,
+    dropdownKey,
+    resetDropdown,
   } = useMedicineSearch();
 
   const dataSet = suggestions.map((medicine) => ({
@@ -51,11 +53,10 @@ export function MedicineScreen({ navigation }: Props) {
       );
       if (medicine) {
         addMedicine(medicine);
-        dropdownRef.current?.clear();
-        setQuery("");
+        resetDropdown();
       }
     },
-    [suggestions, addMedicine, setQuery],
+    [suggestions, addMedicine, resetDropdown],
   );
 
   function handleConfirm() {
@@ -85,6 +86,7 @@ export function MedicineScreen({ navigation }: Props) {
 
       <View className="flex-1 p-5 bg-bg-light gap-3">
         <AutocompleteDropdown
+          key={dropdownKey}
           ref={dropdownRef}
           clearOnFocus={false}
           closeOnBlur={true}
@@ -94,6 +96,7 @@ export function MedicineScreen({ navigation }: Props) {
           dataSet={dataSet}
           loading={isLoading}
           debounce={300}
+          matchFrom="start"
           containerStyle={{ zIndex: 10 }}
           inputContainerStyle={{
             backgroundColor: "white",
