@@ -16,10 +16,14 @@ export function ConfirmScreen({ navigation, route }: Props) {
   const { analyze, isLoading, error } = useMedicineInteractions();
 
   async function handleConfirm() {
+    const start = performance.now();
     const interactions = await analyze(medicines);
 
     if (interactions === null) return;
 
+    console.log(
+      `[UI] tempo total até navegação → ${(performance.now() - start).toFixed(0)}ms`,
+    );
     navigation.navigate("Result", { medicines, interactions });
   }
 
