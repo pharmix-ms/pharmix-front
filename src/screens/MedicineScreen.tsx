@@ -29,6 +29,8 @@ export function MedicineScreen({ navigation }: Props) {
     setQuery,
     suggestions,
     isLoading,
+    error,
+    retry,
     selectedMedicines,
     addMedicine,
     removeMedicine,
@@ -180,6 +182,13 @@ export function MedicineScreen({ navigation }: Props) {
             );
           }}
         />
+
+        {error && (
+          <View className="gap-2">
+            <Text className="font-montserrat text-center text-red-500">{error}</Text>
+            <AppButton title="Tentar novamente" onPress={retry} variant="outline" />
+          </View>
+        )}
 
         <Text className="font-montserrat-bold text-brand-primary text-lg">
           Princípios Ativos Adicionados

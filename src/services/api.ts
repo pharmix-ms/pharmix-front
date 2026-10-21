@@ -2,24 +2,29 @@
 
 import { ApiInteracao, ApiMedicamento } from "../types/api";
 
-const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
-const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL?.replace(/\/+$/, "");
 
-if (!BASE_URL || !API_KEY) {
-  throw new Error("Variáveis de ambiente não configuradas.");
+if (!BASE_URL) {
+  throw new Error("Configure EXPO_PUBLIC_BASE_URL com o endereço do backend.");
 }
 
 const headers = {
   "Content-Type": "application/json",
-  "x-api-key": API_KEY,
 };
 
 // ─── Funções ──────────────────────────────────────────────────────────────────
 
-export async function fetchTodosMedicamentos(): Promise<ApiMedicamento[]> {
-  const res = await fetch(`${BASE_URL}/medicamentos`, { headers });
-  if (!res.ok) throw new Error(`Erro ${res.status}`);
+export async function fetchTodosMedicamentos(signal?: AbortSignal): Promise<ApiMedicamento[]> {
+  const res = await fetch(`${BASE_URL}/medicamentos`, { headers, signal });
+  if (!res.ok) throw new Error(`Não foi possível carregar os medicamentos (HTTP ${res.status}).`);
   const data = await res.json();
+  if (!Array.isArray(data.medicamentos) || !data.medicamentos.every(
+    (medicine: ApiMedicamento) => medicine && typeof medicine.id === "string"
+      && typeof medicine.nome === "string" && medicine.nome.trim().length > 0
+      && typeof medicine.indicacoes === "string",
+  )) {
+    throw new Error("Resposta inválida ao carregar os medicamentos.");
+  }
   return data.medicamentos as ApiMedicamento[];
 }
 
