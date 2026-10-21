@@ -26,11 +26,11 @@ export function useMedicineInteractions() {
       const interacoes = await fetchInteracoes(nomes);
       setState({ data: interacoes, isLoading: false, error: null });
       return interacoes;
-    } catch {
+    } catch (error) {
       setState({
         data: [],
         isLoading: false,
-        error: "Não foi possível carregar as interações.",
+        error: error instanceof Error ? error.message : "Não foi possível carregar as interações.",
       });
       return null;
     }

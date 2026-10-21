@@ -43,7 +43,7 @@ export function useHistory() {
         let newEntries: HistoryEntry[];
 
         if (interactions.length === 0 && medicines) {
-          // Caso seguro: cria uma entrada sintética com os medicamentos analisados
+          // Registra ausência de resultados na base consultada.
           newEntries = [
             {
               id: `${Date.now()}-safe`,
@@ -51,17 +51,17 @@ export function useHistory() {
               status: "safe",
               medicines,
               interaction: {
-                id: -1,
-                acao: "Combinação Segura",
+                id: "sem-registro",
+                acao: "Sem interações cadastradas",
                 mecanismo_efeito: "Nenhuma interação conhecida foi encontrada.",
-                recomendacoes: "Nenhuma recomendação especial necessária.",
+                recomendacoes: "A ausência de registros na base não confirma ausência de risco.",
                 medicamento1: {
-                  id: -1,
+                  id: "sem-registro-1",
                   nome: medicines[0] ?? "",
                   indicacoes: "",
                 },
                 medicamento2: {
-                  id: -1,
+                  id: "sem-registro-2",
                   nome: medicines[1] ?? "",
                   indicacoes: "",
                 },

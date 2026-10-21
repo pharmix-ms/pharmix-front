@@ -2,9 +2,12 @@
 
 import { ApiInteracao, ApiMedicamento } from "../types/api";
 
-const BASE_URL = "https://imses.crfmg.org.br/api";
-const API_KEY =
-  "REVOKED_API_KEY_REMOVED";
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
+const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
+
+if (!BASE_URL || !API_KEY) {
+  throw new Error("Variáveis de ambiente não configuradas.");
+}
 
 const headers = {
   "Content-Type": "application/json",
@@ -35,29 +38,18 @@ export async function fetchInteracoes(
 
     const duration = (performance.now() - start).toFixed(0);
 
-    if (res.status === 404) {
-      console.log(
-        `[API] fetchInteracoes → ${duration}ms | sem interações para: ${nomes.join(", ")}`,
-      );
-      return [];
-    }
-
-    if (res.status === 400) {
-      const error = await res.json();
-      console.warn(
-        `[API] fetchInteracoes → ${duration}ms | 400: ${error.message}`,
-      );
-      throw new Error(error.message || "Requisição inválida");
-    }
-
     if (!res.ok) {
-      console.warn(
-        `[API] fetchInteracoes → ${duration}ms | erro HTTP ${res.status}`,
-      );
-      throw new Error(`Erro ${res.status}`);
+      const error = await res.json().catch(() => null);
+      const message = typeof error?.message === "string"
+        ? error.message
+        : `Não foi possível consultar as interações (HTTP ${res.status}).`;
+      throw new Error(message);
     }
 
     const data = await res.json();
+    if (!Array.isArray(data.interacoes)) {
+      throw new Error("Resposta inválida ao consultar as interações.");
+    }
     console.log(
       `[API] fetchInteracoes → ${duration}ms | ${data.interacoes?.length ?? 0} interação(ões) | princípios: ${nomes.join(", ")}`,
     );

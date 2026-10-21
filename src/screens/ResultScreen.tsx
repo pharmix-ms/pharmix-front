@@ -24,9 +24,9 @@ type Props = NativeStackScreenProps<MedicineStackParamList, "Result">;
 
 const STATUS_CONFIG = {
   safe: {
-    label: "Combinação Segura",
+    label: "Sem interações cadastradas",
     description:
-      "Nenhuma interação perigosa foi encontrada entre os medicamentos selecionados.",
+      "Não há registros para essa combinação na base consultada. Isso não confirma ausência de risco.",
     colors: ["#2ECC71", "#2EB88A"] as const,
     icon: CheckCircle,
     iconColor: "#2ECC71",
