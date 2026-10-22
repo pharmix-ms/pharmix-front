@@ -25,14 +25,19 @@ export function useMedicineInteractions() {
       const nomes = medicines.map((m) => m.name);
       const interacoes = await fetchInteracoes(nomes);
       setState({ data: interacoes, isLoading: false, error: null });
-      return interacoes; // <-- retorna para o caller
-    } catch {
+      return interacoes;
+    } catch (error) {
       setState({
         data: [],
         isLoading: false,
-        error: "Não foi possível carregar as interações.",
+        error:
+          error instanceof Error && error.message === "Network request failed"
+            ? "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente."
+            : error instanceof Error
+              ? error.message
+              : "Não foi possível carregar as interações.",
       });
-      return [];
+      return null;
     }
   }, []);
 

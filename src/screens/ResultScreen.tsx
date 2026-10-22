@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   Check,
   CheckCircle,
+  CircleQuestionMark,
   RotateCcw,
   XCircle,
 } from "lucide-react-native";
@@ -23,9 +24,9 @@ type Props = NativeStackScreenProps<MedicineStackParamList, "Result">;
 
 const STATUS_CONFIG = {
   safe: {
-    label: "Combinação Segura",
+    label: "Sem interações cadastradas",
     description:
-      "Nenhuma interação perigosa foi encontrada entre os medicamentos selecionados.",
+      "Não há registros para essa combinação na base consultada. Isso não confirma ausência de risco.",
     colors: ["#2ECC71", "#2EB88A"] as const,
     icon: CheckCircle,
     iconColor: "#2ECC71",
@@ -71,6 +72,23 @@ export function ResultScreen({ navigation, route }: Props) {
 
     saveInteractions(toSave, medicineNames);
   }, [interactions, status, medicines, saveInteractions]);
+
+  if (!interactions) {
+    return (
+      <View className="flex-1 justify-center items-center bg-light gap-4">
+        <CircleQuestionMark size={62} color={"#344051"} />
+        <Text className="font-montserrat-semibold text-brand-primary">
+          Dados de interação indisponíveis.
+        </Text>
+        <AppButton
+          title="Nova Análise"
+          variant="outline"
+          onPress={() => navigation.popToTop()}
+          icon={RotateCcw}
+        />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1">

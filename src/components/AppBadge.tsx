@@ -7,7 +7,7 @@ interface AppBadgeProps {
 }
 
 const badgeText = {
-  safe: "Seguro",
+  safe: "Sem registro",
   warning: "Atenção",
   danger: "Perigoso",
 };

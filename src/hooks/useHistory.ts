@@ -14,13 +14,15 @@ export interface HistoryEntry {
 }
 
 const HISTORY_KEY = "@medicine_history";
+const MAX_HISTORY = 100;
 
 export function useHistory() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const load = useCallback(async () => {
-    setIsLoading(true);
+    setIsLoading((prev) => (history.length === 0 ? true : prev));
+
     try {
       const raw = await AsyncStorage.getItem(HISTORY_KEY);
       setHistory(raw ? JSON.parse(raw) : []);
@@ -29,7 +31,7 @@ export function useHistory() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [history.length]);
 
   const saveInteractions = useCallback(
     async (interactions: ApiInteracao[], medicines?: string[]) => {
@@ -41,7 +43,7 @@ export function useHistory() {
         let newEntries: HistoryEntry[];
 
         if (interactions.length === 0 && medicines) {
-          // Caso seguro: cria uma entrada sintética com os medicamentos analisados
+          // Registra ausência de resultados na base consultada.
           newEntries = [
             {
               id: `${Date.now()}-safe`,
@@ -49,17 +51,17 @@ export function useHistory() {
               status: "safe",
               medicines,
               interaction: {
-                id: -1,
-                acao: "Combinação Segura",
+                id: "sem-registro",
+                acao: "Sem interações cadastradas",
                 mecanismo_efeito: "Nenhuma interação conhecida foi encontrada.",
-                recomendacoes: "Nenhuma recomendação especial necessária.",
+                recomendacoes: "A ausência de registros na base não confirma ausência de risco.",
                 medicamento1: {
-                  id: -1,
+                  id: "sem-registro-1",
                   nome: medicines[0] ?? "",
                   indicacoes: "",
                 },
                 medicamento2: {
-                  id: -1,
+                  id: "sem-registro-2",
                   nome: medicines[1] ?? "",
                   indicacoes: "",
                 },
@@ -75,7 +77,7 @@ export function useHistory() {
           }));
         }
 
-        const updated = [...newEntries, ...existing];
+        const updated = [...newEntries, ...existing].slice(0, MAX_HISTORY);
         await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
         setHistory(updated);
       } catch {
