@@ -37,10 +37,13 @@ export function AppInputBadge({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ selected: isSelected }}
       className={`overflow-hidden rounded-full bg-bg-light ${className}`}
       style={{ position: "relative" }}
     >
-      <Animated.View
+      <Animated.View accessible={false} importantForAccessibility="no-hide-descendants"
         style={{ opacity: unselectedOpacity }}
         className="items-center justify-center px-4 py-2"
       >
@@ -49,7 +52,7 @@ export function AppInputBadge({
         </Text>
       </Animated.View>
 
-      <Animated.View
+      <Animated.View accessible={false} importantForAccessibility="no-hide-descendants"
         style={{
           ...StyleSheet.absoluteFillObject,
           opacity: selectedOpacity,

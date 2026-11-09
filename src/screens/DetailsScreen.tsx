@@ -14,7 +14,7 @@ import {
 type Props = NativeStackScreenProps<MedicineStackParamList, "Details">;
 
 const STATUS_CONFIG = {
-  safe: { colors: ["#2ECC71", "#2EB88A"] as const },
+  safe: { colors: ["#266697", "#275070"] as const },
   warning: { colors: ["#F4A261", "#FF8000"] as const },
   danger: { colors: ["#FF6346", "#E63946"] as const },
 };
@@ -23,6 +23,7 @@ export function DetailsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const { interaction, status, medicines, fromHistory } = route.params;
   const config = STATUS_CONFIG[status];
+  const withoutRecord = status === "safe";
 
   const medicineList = medicines?.flatMap((m) =>
     m.includes(" + ") ? m.split(" + ") : [m],
@@ -58,7 +59,7 @@ export function DetailsScreen({ navigation, route }: Props) {
                 className="flex-1 gap-2 px-4 py-4"
               >
                 <Text className="font-montserrat-bold text-white text-2xl">
-                  {interaction.acao || "Ação não informada"}
+                  {withoutRecord ? "Sem interações cadastradas" : interaction.acao || "Ação não informada"}
                 </Text>
                 <View className="gap-1">
                   <Text className="font-montserrat-bold text-white">
@@ -88,7 +89,9 @@ export function DetailsScreen({ navigation, route }: Props) {
                 </Text>
               </View>
               <Text className="font-montserrat text-brand-secondary">
-                {interaction.mecanismo_efeito}
+                {withoutRecord
+                  ? "A consulta não retornou registros na base disponível."
+                  : interaction.mecanismo_efeito || "Mecanismo ou efeito não informado na fonte."}
               </Text>
             </View>
             <View className="bg-white rounded-2xl px-4 py-3 gap-2">
@@ -99,7 +102,9 @@ export function DetailsScreen({ navigation, route }: Props) {
                 </Text>
               </View>
               <Text className="font-montserrat text-brand-secondary">
-                {interaction.recomendacoes}
+                {withoutRecord
+                  ? "A ausência de registros na base não confirma ausência de risco."
+                  : interaction.recomendacoes || "Recomendação não informada na fonte."}
               </Text>
             </View>
           </View>
@@ -108,7 +113,7 @@ export function DetailsScreen({ navigation, route }: Props) {
           <View className="gap-3 pt-5">
             <AppButton
               title="Nova Análise"
-              onPress={() => navigation.popToTop()}
+              onPress={() => navigation.reset({ index: 0, routes: [{ name: "Medicine" }] })}
               icon={RotateCcw}
               gradientColors={config.colors}
             />

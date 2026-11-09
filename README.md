@@ -16,11 +16,11 @@ O projeto se alinha à **ODS 3 da ONU – Saúde e Bem-Estar**, promovendo o uso
 
 ## ✨ Funcionalidades (MVP)
 
-- 🔍 **Busca de princípios ativos** com campo de autocompletar
-- ⚡ **Verificação de interações** entre dois ou mais princípios ativos selecionados
-- 🚨 **Alertas visuais** com grau de severidade e descrição dos riscos
-- 🕓 **Histórico de consultas** realizadas pelo usuário
-- 📱 Compatível com **Android e iOS**
+- 🔍 **Busca no catálogo** de princípios ativos, alimentos e bebidas
+- ⚡ **Consulta de interações** entre princípios ativos e de relações cadastradas com espinafre, bebida alcoólica e água
+- 👤 **Perfil opcional** com alergias autorrelatadas, gravidez e condições cobertas pelo conjunto inicial de regras
+- 🕓 **Histórico local** para reabrir consultas e seus detalhes
+- 📱 Demonstração em Android
 
 ---
 
@@ -36,12 +36,12 @@ O projeto se alinha à **ODS 3 da ONU – Saúde e Bem-Estar**, promovendo o uso
 | Ícones | Lucide React Native |
 | Armazenamento local | AsyncStorage |
 | Autocompletar | React Native Autocomplete Dropdown |
-| API de dados | CRF-MG (`imses.crfmg.org.br`) |
+| API de dados | Backend Pharmix em NestJS com PostgreSQL e dados importados do Detecta Interações |
 | Design/Prototipação | Figma |
 | Linting/Formatação | ESLint + Prettier (com plugin Tailwind) |
 | Versionamento | Git + GitHub |
 
-> **Nota sobre a API:** os dados de princípios ativos são consumidos da API disponibilizada pelo Conselho Regional de Farmácia de Minas Gerais (CRF-MG), cujo acesso foi viabilizado mediante contato direto com os desenvolvedores. Por limitações da API, as interações no MVP são verificadas por **princípios ativos**, não por nomes comerciais de medicamentos.
+O aplicativo envia ao backend apenas os nomes dos princípios ativos selecionados para a consulta entre medicamentos. O perfil, o histórico e as regras complementares são processados no aparelho. Cada orientação complementar de origem externa indica a referência. Uma resposta sem registros significa que a consulta não encontrou correspondência na base disponível.
 
 ---
 
@@ -64,9 +64,9 @@ pharmix-front/
 
 ### Pré-requisitos
 
-- Node.js 18+
-- Expo CLI (`npm install -g expo-cli`)
-- Aplicativo **Expo Go** no celular (ou emulador Android/iOS)
+- Node.js 22 ou 24
+- Android Studio com emulador configurado
+- Backend Pharmix executando na porta 3000 com a base importada, conforme as [instruções do backend](https://github.com/pharmix-ms/pharmix-back/blob/feat-mateus/docs/importacao-detecta.md)
 
 ### Instalação
 
@@ -76,25 +76,34 @@ git clone https://github.com/pharmix-ms/pharmix-front.git
 cd pharmix-front
 
 # Instale as dependências
-npm install
+npm ci
+cp .env.example .env
 
-# Inicie o projeto
-npx expo start
+# Compile e abra a versão de desenvolvimento no emulador
+npm run android
 ```
 
-Escaneie o QR Code com o Expo Go (Android) ou com a câmera (iOS).
+No PowerShell, use `Copy-Item .env.example .env`. O emulador padrão do Android Studio acessa o computador pelo endereço `http://10.0.2.2:3000`, definido em `EXPO_PUBLIC_BASE_URL`. Se a versão de desenvolvimento já estiver instalada, inicie o Metro com `npx expo start --dev-client`.
+
+Use `npm test` para executar os cenários das regras complementares, `npm run lint` para a análise estática e `npx tsc --noEmit` para a checagem de tipos.
 
 ---
 
+## Demonstração no Android
+
+| Cenário | Fluxo esperado |
+|---|---|
+| AAS + Varfarina | Registro da base Detecta Interações com tela de detalhes |
+| AAS + Acetaminofeno, com perfil limpo | Resposta sem registros para a seleção |
+| Varfarina + Espinafre | Cartão de interação com referência |
+| Paracetamol + Bebida alcoólica | Cartão de interação com referência |
+| Omeprazol + Água | Cartão de orientação de administração |
+| Perfil com alergia informada a AAS, seguido de consulta por AAS | Alerta do perfil |
+| Aba Histórico | Reabertura e limpeza das consultas salvas |
+
 ## 🔭 Roadmap
 
-O MVP atual é a primeira versão funcional do Pharmix. As próximas etapas planejadas incluem:
-
-- [ ] **Backend próprio com Next.js** — substituindo a dependência da API externa e permitindo maior controle e escalabilidade dos dados farmacológicos
-- [ ] **Integração de IA** — análise inteligente de interações medicamentosas, incluindo combinações não previamente cadastradas
-- [ ] **Tela de Perfil Médico** — o usuário poderá informar condições como gravidez, alergias e doenças crônicas para receber alertas personalizados
-- [ ] **Busca por nome comercial** — além dos princípios ativos, futuramente será possível pesquisar diretamente pelo nome do medicamento
-- [ ] **Ampliação da base de dados** — cobertura de mais princípios ativos e combinações
+As próximas etapas incluem ampliar as regras documentadas, avaliar a compreensão dos alertas com o público-alvo e expandir a cobertura para apresentações e nomes comerciais.
 
 ---
 

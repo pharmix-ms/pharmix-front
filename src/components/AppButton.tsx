@@ -71,6 +71,9 @@ export function AppButton({
     return (
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityState={{ disabled: isLoading || disabled, busy: isLoading }}
         disabled={isLoading || disabled}
         style={Platform.select({
           ios: {
@@ -92,6 +95,9 @@ export function AppButton({
     return (
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityState={{ disabled: isLoading || disabled, busy: isLoading }}
         disabled={isLoading || disabled}
         className={`${baseStyle} border border-border-darkGray bg-white active:bg-light ${className}`}
       >
@@ -103,6 +109,9 @@ export function AppButton({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: isLoading || disabled, busy: isLoading }}
       disabled={isLoading || disabled}
       className={`${baseStyle} overflow-hidden ${
         disabled ? "opacity-50" : "active:opacity-90"

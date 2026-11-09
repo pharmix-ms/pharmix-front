@@ -1,80 +1,60 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useEffect, useRef, useState } from "react";
-
-// ─── Tipos ────────────────────────────────────────────────────────────────────
-export interface HealthProfile {
-  age: string;
-  weight: string;
-  gender: string;
-  isPregnant: boolean;
-  conditions: string[];
-  allergies: string[];
-}
+import { useCallback, useEffect, useState } from "react";
+import type { HealthProfile } from "../types/consultation";
 
 const PROFILE_KEY = "health_profile";
 
-const DEFAULT_PROFILE: HealthProfile = {
-  age: "",
-  weight: "",
-  gender: "",
-  isPregnant: false,
+const EMPTY_PROFILE: HealthProfile = {
+  pregnancy: "unknown",
   conditions: [],
   allergies: [],
 };
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-export function useHealthProfile() {
-  const [profile, setProfile] = useState<HealthProfile>(DEFAULT_PROFILE);
-  const [isLoading, setIsLoading] = useState(true);
-  const savedProfile = useRef<HealthProfile>(DEFAULT_PROFILE);
+function readNames(value: unknown): string[] {
+  return Array.isArray(value)
+    ? [...new Set(value.filter((item): item is string => typeof item === "string"))]
+    : [];
+}
 
-  // Carrega o perfil salvo ao montar
-  useEffect(() => {
-    async function load() {
-      try {
-        const raw = await AsyncStorage.getItem(PROFILE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw) as HealthProfile;
-          setProfile(parsed);
-          savedProfile.current = parsed;
-        }
-        // console.log("health_profile:", raw);
-      } catch {
-        // sem perfil salvo, usa o padrão
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    load();
-  }, []);
+export async function loadHealthProfile(): Promise<HealthProfile> {
+  const raw = await AsyncStorage.getItem(PROFILE_KEY);
+  if (!raw) return EMPTY_PROFILE;
 
-  // Salva qualquer alteração no perfil
-  const saveProfile = useCallback(async (updated: HealthProfile) => {
-    try {
-      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
-      setProfile(updated);
-    } catch {
-      // falha silenciosa
-    }
-  }, []);
-
-  // Helpers para atualizar campos individuais
-  const updateField = useCallback(
-    <K extends keyof HealthProfile>(key: K, value: HealthProfile[K]) => {
-      setProfile((prev) => ({ ...prev, [key]: value }));
-    },
-    [],
-  );
-
-  const resetProfile = useCallback(() => {
-    setProfile(savedProfile.current);
-  }, []);
+  const stored = JSON.parse(raw);
+  if (!stored || typeof stored !== "object" || Array.isArray(stored)) {
+    throw new Error("Perfil inválido.");
+  }
 
   return {
-    profile,
-    isLoading,
-    saveProfile,
-    updateField,
-    resetProfile,
+    pregnancy: stored.pregnancy === "yes" || stored.pregnancy === "no"
+      ? stored.pregnancy
+      : stored.isPregnant === true ? "yes" : "unknown",
+    conditions: readNames(stored.conditions),
+    allergies: readNames(stored.allergies),
   };
+}
+
+export function useHealthProfile() {
+  const [profile, setProfile] = useState<HealthProfile>(EMPTY_PROFILE);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+
+  useEffect(() => {
+    loadHealthProfile()
+      .then(setProfile)
+      .catch(() => setLoadFailed(true))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const save = useCallback(async (updated: HealthProfile) => {
+    await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
+  }, []);
+
+  const clear = useCallback(async () => {
+    await AsyncStorage.removeItem(PROFILE_KEY);
+    setProfile(EMPTY_PROFILE);
+    setLoadFailed(false);
+  }, []);
+
+  return { profile, setProfile, isLoading, loadFailed, save, clear };
 }

@@ -13,7 +13,7 @@ const badgeText = {
 };
 
 const badgeBg = {
-  safe: ["#2ECC71", "#2EB88A"],
+  safe: ["#266697", "#275070"],
   warning: ["#F4A261", "#FF8000"],
   danger: ["#FF6346", "#E63946"],
 } as const;

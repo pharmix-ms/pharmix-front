@@ -1,5 +1,5 @@
-import { Medicine } from "../hooks/useMedicineSearch";
-import { ApiInteracao } from "./api";
+import type { ApiInteracao } from "./api";
+import type { ConsultationItem, ConsultationResult } from "./consultation";
 
 export type RootStackParamList = {
   Home: undefined;
@@ -12,25 +12,23 @@ export type BottomTabParamList = {
   MedicineStack: undefined;
 };
 
+type DetailsParams = {
+  interaction: ApiInteracao;
+  status: "safe" | "warning" | "danger";
+  medicines?: string[];
+  fromHistory?: boolean;
+};
+
 export type MedicineStackParamList = {
   Medicine: undefined;
   Camera: undefined;
-  Confirm: { medicines: Medicine[] };
-  Result: { medicines: Medicine[]; interactions: ApiInteracao[] };
-  Details: {
-    interaction: ApiInteracao;
-    status: "safe" | "warning" | "danger";
-    medicines?: string[];
-    fromHistory?: boolean;
-  };
+  Confirm: { items: ConsultationItem[] };
+  Result: { result: ConsultationResult; historySaved?: boolean };
+  Details: DetailsParams;
 };
 
 export type HistoryStackParamList = {
   HistoryList: undefined;
-  Details: {
-    interaction: ApiInteracao;
-    status: "danger" | "safe" | "warning";
-    medicines?: string[];
-    fromHistory?: boolean;
-  };
+  SavedResult: { result: ConsultationResult };
+  Details: DetailsParams;
 };

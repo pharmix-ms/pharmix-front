@@ -6,7 +6,7 @@ interface AppHistoryItemProps {
   title: string;
   date: string;
   medication: string;
-  gravity: "danger" | "warning" | "safe";
+  gravity?: "warning" | "safe";
   onPress?: () => void;
 }
 
@@ -18,11 +18,7 @@ export function AppHistoryItem({
   onPress,
 }: AppHistoryItemProps) {
   const borderColor =
-    gravity === "danger"
-      ? "border-danger"
-      : gravity === "warning"
-        ? "border-warning"
-        : "border-secondary";
+    gravity === "warning" ? "border-warning" : "border-primary";
   return (
     <TouchableOpacity
       activeOpacity={0.85}
@@ -36,7 +32,7 @@ export function AppHistoryItem({
             {title}
           </Text>
           <View className="flex-row items-center gap-1">
-            <AppBadge variant={gravity} />
+            {gravity && <AppBadge variant={gravity} />}
           </View>
         </View>
         <Text className="text-brand-secondary font-montserrat-semibold flex-1">

@@ -1,106 +1,76 @@
-// src/hooks/useHistory.ts
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useEffect, useState } from "react";
-import { ApiInteracao } from "../types/api";
-import { getInteractionSeverity } from "../utils/interactionSeverity";
+import { useCallback, useState } from "react";
+import type { ApiInteracao } from "../types/api";
+import type { ConsultationResult } from "../types/consultation";
 
-export interface HistoryEntry {
+interface EntryMetadata {
   id: string;
   date: string;
+}
+
+interface LegacyEntry extends EntryMetadata {
   interaction: ApiInteracao;
   status: "danger" | "safe" | "warning";
   medicines?: string[];
 }
 
+export type HistoryEntry = LegacyEntry | (EntryMetadata & { result: ConsultationResult });
+
 const HISTORY_KEY = "@medicine_history";
 const MAX_HISTORY = 100;
+let pendingWrite = Promise.resolve();
+
+async function readHistory(): Promise<HistoryEntry[]> {
+  const raw = await AsyncStorage.getItem(HISTORY_KEY);
+  const data: unknown = raw ? JSON.parse(raw) : [];
+  if (!Array.isArray(data)) throw new Error("Histórico inválido.");
+  return data;
+}
+
+function queueHistoryWrite(write: () => Promise<void>) {
+  const operation = pendingWrite.then(write);
+  pendingWrite = operation.catch(() => undefined);
+  return operation;
+}
+
+export function saveConsultation(result: ConsultationResult) {
+  const now = new Date();
+  const entry = {
+    id: `${now.getTime()}-${Math.random().toString(36).slice(2)}`,
+    date: now.toISOString(),
+    result,
+  };
+
+  return queueHistoryWrite(async () => {
+    const existing = await readHistory();
+    const updated = [entry, ...existing].slice(0, MAX_HISTORY);
+    await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+  });
+}
 
 export function useHistory() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
 
-  const load = useCallback(async () => {
-    setIsLoading((prev) => (history.length === 0 ? true : prev));
-
+  const reload = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const raw = await AsyncStorage.getItem(HISTORY_KEY);
-      setHistory(raw ? JSON.parse(raw) : []);
+      await pendingWrite;
+      setHistory(await readHistory());
+      setLoadFailed(false);
     } catch {
-      setHistory([]);
+      setLoadFailed(true);
     } finally {
       setIsLoading(false);
     }
-  }, [history.length]);
-
-  const saveInteractions = useCallback(
-    async (interactions: ApiInteracao[], medicines?: string[]) => {
-      try {
-        const raw = await AsyncStorage.getItem(HISTORY_KEY);
-        const existing: HistoryEntry[] = raw ? JSON.parse(raw) : [];
-        const now = new Date().toISOString();
-
-        let newEntries: HistoryEntry[];
-
-        if (interactions.length === 0 && medicines) {
-          // Registra ausência de resultados na base consultada.
-          newEntries = [
-            {
-              id: `${Date.now()}-safe`,
-              date: now,
-              status: "safe",
-              medicines,
-              interaction: {
-                id: "sem-registro",
-                acao: "Sem interações cadastradas",
-                mecanismo_efeito: "Nenhuma interação conhecida foi encontrada.",
-                recomendacoes: "A ausência de registros na base não confirma ausência de risco.",
-                medicamento1: {
-                  id: "sem-registro-1",
-                  nome: medicines[0] ?? "",
-                  indicacoes: "",
-                },
-                medicamento2: {
-                  id: "sem-registro-2",
-                  nome: medicines[1] ?? "",
-                  indicacoes: "",
-                },
-              },
-            },
-          ];
-        } else {
-          newEntries = interactions.map((interaction) => ({
-            id: `${Date.now()}-${Math.random().toString(36).slice(2)}-${interaction.id}`,
-            date: now,
-            interaction,
-            status: getInteractionSeverity(interaction),
-          }));
-        }
-
-        const updated = [...newEntries, ...existing].slice(0, MAX_HISTORY);
-        await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
-        setHistory(updated);
-      } catch {
-        // falha silenciosa, não salva nem atualiza o estado
-      }
-    },
-    [],
-  );
-
-  const clear = useCallback(async () => {
-    await AsyncStorage.removeItem(HISTORY_KEY);
-    setHistory([]);
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  const clear = useCallback(async () => {
+    await queueHistoryWrite(() => AsyncStorage.removeItem(HISTORY_KEY));
+    setHistory([]);
+    setLoadFailed(false);
+  }, []);
 
-  return {
-    history,
-    isLoading,
-    saveInteractions,
-    clear,
-    reload: load,
-  };
+  return { history, isLoading, loadFailed, clear, reload };
 }

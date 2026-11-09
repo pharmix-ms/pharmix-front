@@ -44,16 +44,22 @@ function formatTime(isoDate: string): string {
 const HistoryListItem = memo(
   ({ entry, onPress }: { entry: HistoryEntry; onPress: () => void }) => (
     <AppHistoryItem
-      title={entry.interaction.acao || "Ação não informada"}
+      title={
+        "result" in entry
+          ? "Consulta"
+          : entry.status === "safe"
+            ? "Sem interações cadastradas"
+            : entry.interaction.acao || "Ação não informada"
+      }
       date={formatTime(entry.date)}
       medication={
-        entry.medicines?.join(" + ") ??
+        "result" in entry ? entry.result.items.map(({ name }) => name).join(" + ") : entry.medicines?.join(" + ") ??
         [
           entry.interaction.medicamento1.nome,
           entry.interaction.medicamento2.nome,
         ].join(" + ")
       }
-      gravity={entry.status}
+      gravity={"result" in entry ? undefined : entry.status === "safe" ? "safe" : "warning"}
       onPress={onPress}
     />
   ),
@@ -61,7 +67,7 @@ const HistoryListItem = memo(
 
 export function HistoryScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { history, isLoading, clear, reload } = useHistory();
+  const { history, isLoading, loadFailed, clear, reload } = useHistory();
 
   useFocusEffect(
     useCallback(() => {
@@ -75,7 +81,13 @@ export function HistoryScreen({ navigation }: Props) {
       "Tem certeza que deseja apagar todo o histórico?",
       [
         { text: "Cancelar", style: "cancel" },
-        { text: "Apagar", style: "destructive", onPress: clear },
+        {
+          text: "Apagar",
+          style: "destructive",
+          onPress: () => {
+            clear().catch(() => Alert.alert("Histórico", "Não foi possível apagar o histórico."));
+          },
+        },
       ],
     );
   };
@@ -92,14 +104,18 @@ export function HistoryScreen({ navigation }: Props) {
     ({ item: entry }: { item: HistoryEntry }) => (
       <HistoryListItem
         entry={entry}
-        onPress={() =>
+        onPress={() => {
+          if ("result" in entry) {
+            navigation.navigate("SavedResult", { result: entry.result });
+            return;
+          }
           navigation.navigate("Details", {
             interaction: entry.interaction,
-            status: entry.status,
+            status: entry.status === "safe" ? "safe" : "warning",
             medicines: entry.medicines,
             fromHistory: true,
-          })
-        }
+          });
+        }}
       />
     ),
     [navigation],
@@ -125,10 +141,10 @@ export function HistoryScreen({ navigation }: Props) {
       >
         <Clock2 size={62} color={"#FFFFFF"} />
         <Text className="font-montserrat-bold text-white text-2xl">
-          Histórico de combinação
+          Histórico de consultas
         </Text>
         <Text className="font-montserrat text-white text-base">
-          Verifique interações medicamentosas analisadas anteriormente.
+          Reabra as consultas salvas neste aparelho.
         </Text>
       </LinearGradient>
 
@@ -142,9 +158,9 @@ export function HistoryScreen({ navigation }: Props) {
         ListHeaderComponent={
           <View className="flex-row justify-between">
             <Text className="font-montserrat-bold text-brand-primary text-lg">
-              Interações Analisadas
+              Consultas salvas
             </Text>
-            {history.length > 0 && (
+            {(history.length > 0 || loadFailed) && (
               <TouchableOpacity
                 onPress={handleClear}
                 className="flex-row items-center gap-2"
@@ -163,6 +179,10 @@ export function HistoryScreen({ navigation }: Props) {
             <View className="items-center py-10">
               <ActivityIndicator size="large" color="#006AFF" />
             </View>
+          ) : loadFailed ? (
+            <Text accessibilityRole="alert" className="font-montserrat text-red-600">
+              Não foi possível carregar o histórico salvo.
+            </Text>
           ) : (
             <View className="items-center justify-center py-16 gap-4">
               <ClockFading size={52} color="#344051" />

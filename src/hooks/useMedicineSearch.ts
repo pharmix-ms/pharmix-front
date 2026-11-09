@@ -1,22 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchTodosMedicamentos } from "../services/api";
+import { foodAndDrink } from "../data/consultationRules";
+import type { ConsultationItem } from "../types/consultation";
 
-export interface Medicine {
-  name: string;
-  type: string;
+export function itemKey(item: ConsultationItem) {
+  return `${item.type}:${item.name.toLowerCase()}`;
 }
 
-function medicineKey(medicine: Medicine) {
-  return medicine.name.toLowerCase();
+const MAX_ITEMS = 50;
+
+export function normalizeSearch(text: string) {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 }
 
-export function useMedicineSearch() {
+export function useMedicineSearch(scope: "all" | "medicines" = "all") {
   const [query, setQuery] = useState("");
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [medicines, setMedicines] = useState<ConsultationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadAttempt, setLoadAttempt] = useState(0);
-  const [selectedMedicines, setSelectedMedicines] = useState<Medicine[]>([]);
+  const [selectedMedicines, setSelectedMedicines] = useState<ConsultationItem[]>([]);
   const [dropdownKey, setDropdownKey] = useState(0);
 
   useEffect(() => {
@@ -26,7 +29,10 @@ export function useMedicineSearch() {
     fetchTodosMedicamentos(controller.signal)
       .then((items) => {
         if (controller.signal.aborted) return;
-        setMedicines(items.map((medicine) => ({ name: medicine.nome, type: "Princípio Ativo" })));
+        setMedicines([
+          ...items.map(({ nome }) => ({ name: nome, type: "Princípio ativo" as const })),
+          ...(scope === "all" ? foodAndDrink : []),
+        ]);
       })
       .catch((failure: unknown) => {
         if (controller.signal.aborted) return;
@@ -37,16 +43,16 @@ export function useMedicineSearch() {
         if (!controller.signal.aborted) setIsLoading(false);
       });
     return () => controller.abort();
-  }, [loadAttempt]);
+  }, [loadAttempt, scope]);
 
   const suggestions = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedQuery = normalizeSearch(query);
     if (!normalizedQuery || isLoading || error) return [];
     return medicines
-      .filter((medicine) => medicine.name.toLowerCase().includes(normalizedQuery))
+      .filter((medicine) => normalizeSearch(medicine.name).includes(normalizedQuery))
       .filter(
         (m) =>
-          !selectedMedicines.some((s) => medicineKey(s) === medicineKey(m)),
+          !selectedMedicines.some((s) => itemKey(s) === itemKey(m)),
       )
       .slice(0, 8);
 
@@ -54,9 +60,9 @@ export function useMedicineSearch() {
 
   const retry = useCallback(() => setLoadAttempt((attempt) => attempt + 1), []);
 
-  const addMedicine = useCallback((medicine: Medicine) => {
+  const addMedicine = useCallback((medicine: ConsultationItem) => {
     setSelectedMedicines((prev) => {
-      if (prev.some((m) => medicineKey(m) === medicineKey(medicine))) {
+      if (prev.length >= MAX_ITEMS || prev.some((m) => itemKey(m) === itemKey(medicine))) {
         return prev;
       }
 
@@ -66,9 +72,9 @@ export function useMedicineSearch() {
     setQuery("");
   }, []);
 
-  const removeMedicine = useCallback((medicine: Medicine) => {
+  const removeMedicine = useCallback((medicine: ConsultationItem) => {
     setSelectedMedicines((prev) =>
-      prev.filter((m) => medicineKey(m) !== medicineKey(medicine)),
+      prev.filter((m) => itemKey(m) !== itemKey(medicine)),
     );
   }, []);
 
@@ -86,7 +92,8 @@ export function useMedicineSearch() {
     selectedMedicines,
     addMedicine,
     removeMedicine,
-    canAnalyze: selectedMedicines.length >= 2 && !isLoading && !error,
+    canAnalyze: selectedMedicines.some(({ type }) => type === "Princípio ativo") && !isLoading && !error,
+    selectionIsFull: selectedMedicines.length >= MAX_ITEMS,
     dropdownKey,
     resetDropdown,
   };

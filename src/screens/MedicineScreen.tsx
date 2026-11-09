@@ -12,17 +12,14 @@ import { CircleX, Lightbulb, Pill, Scan, Search } from "lucide-react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppButton } from "../components/AppButton";
 import { AppMedicineItem } from "../components/AppMedicineItem";
-import { useMedicineSearch } from "../hooks/useMedicineSearch";
-import { useCallback, useRef } from "react";
-import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
+import { itemKey, useMedicineSearch } from "../hooks/useMedicineSearch";
+import { useCallback } from "react";
+import { AutocompleteDropdown, type AutocompleteDropdownItem } from "react-native-autocomplete-dropdown";
 
 type Props = NativeStackScreenProps<MedicineStackParamList, "Medicine">;
 
 export function MedicineScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dropdownRef = useRef<any>(null);
 
   const {
     query,
@@ -35,24 +32,21 @@ export function MedicineScreen({ navigation }: Props) {
     addMedicine,
     removeMedicine,
     canAnalyze,
+    selectionIsFull,
     dropdownKey,
     resetDropdown,
   } = useMedicineSearch();
 
   const dataSet = suggestions.map((medicine) => ({
-    id: `${medicine.name}|||${medicine.type}`,
+    id: itemKey(medicine),
     title: medicine.name,
   }));
 
   const handleSelectItem = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (item: any) => {
-      if (!item?.id) return;
+    (item: AutocompleteDropdownItem | null) => {
+      if (!item) return;
 
-      const [name, type] = (item.id as string).split("|||");
-      const medicine = suggestions.find(
-        (m) => m.name === name && m.type === type,
-      );
+      const medicine = suggestions.find((candidate) => itemKey(candidate) === item.id);
       if (medicine) {
         addMedicine(medicine);
         resetDropdown();
@@ -62,7 +56,7 @@ export function MedicineScreen({ navigation }: Props) {
   );
 
   function handleConfirm() {
-    navigation.navigate("Confirm", { medicines: selectedMedicines });
+    navigation.navigate("Confirm", { items: selectedMedicines });
   }
 
   return (
@@ -81,15 +75,13 @@ export function MedicineScreen({ navigation }: Props) {
           Análise de interações
         </Text>
         <Text className="font-montserrat text-white text-base">
-          Adicione os princípios ativos de seus medicamentos e analise suas
-          interações.
+          Consulte princípios ativos e combine-os com alimentos ou bebidas do catálogo.
         </Text>
       </LinearGradient>
 
       <View className="flex-1 p-5 bg-bg-light gap-3">
         <AutocompleteDropdown
           key={dropdownKey}
-          ref={dropdownRef}
           clearOnFocus={false}
           closeOnBlur={true}
           closeOnSubmit={true}
@@ -98,7 +90,7 @@ export function MedicineScreen({ navigation }: Props) {
           dataSet={dataSet}
           loading={isLoading}
           debounce={300}
-          matchFrom="start"
+          useFilter={false}
           containerStyle={{ zIndex: 10 }}
           inputContainerStyle={{
             backgroundColor: "white",
@@ -109,7 +101,9 @@ export function MedicineScreen({ navigation }: Props) {
             height: 48,
           }}
           textInputProps={{
-            placeholder: "Buscar princípio ativo",
+            accessibilityLabel: "Buscar no catálogo",
+            placeholder: "Buscar no catálogo",
+            editable: !isLoading && !error && !selectionIsFull,
             placeholderTextColor: "#637083",
             style: {
               fontFamily: "Montserrat-Regular",
@@ -142,7 +136,7 @@ export function MedicineScreen({ navigation }: Props) {
             shadowRadius: 6,
           }}
           renderItem={(item) => {
-            const type = item.id?.split("|||")[1];
+            const type = suggestions.find((candidate) => itemKey(candidate) === item.id)?.type;
             return (
               <View
                 style={{
@@ -191,7 +185,7 @@ export function MedicineScreen({ navigation }: Props) {
         )}
 
         <Text className="font-montserrat-bold text-brand-primary text-lg">
-          Princípios Ativos Adicionados
+          Itens adicionados
         </Text>
 
         <ScrollView
@@ -199,15 +193,19 @@ export function MedicineScreen({ navigation }: Props) {
           showsVerticalScrollIndicator={false}
         >
           <View className="gap-3">
+            <Text className="font-montserrat text-brand-secondary">
+              Alimentos e bebidas disponíveis: Espinafre, Bebida alcoólica e Água.
+              Busque esses nomes no catálogo para adicioná-los à consulta.
+            </Text>
             {selectedMedicines.length === 0 ? (
               <View className="justify-center items-center bg-bg-info rounded-2xl border-2 border-primary border-dashed py-9 gap-2">
                 <Pill size={42} color={"#344051"} />
                 <View className="items-center">
                   <Text className="font-montserrat-bold text-brand-primary text-lg">
-                    Nenhum princípio ativo adicionado
+                    Nenhum item adicionado
                   </Text>
                   <Text className="font-montserrat-bold text-brand-secondary">
-                    Utilize a busca para adicionar princípios ativos
+                    Busque por nome para adicionar itens
                   </Text>
                 </View>
               </View>
@@ -225,13 +223,14 @@ export function MedicineScreen({ navigation }: Props) {
             <View className="flex-1 flex-row items-center px-4 py-3 gap-4">
               <Lightbulb size={24} color={"#457B9D"} />
               <Text className="font-montserrat-medium text-brand-info">
-                Adicione pelo menos 2 princípios ativos para verificar possíveis
-                interações.
+                {selectionIsFull
+                  ? "Limite de 50 itens por consulta."
+                  : "Adicione ao menos um princípio ativo. Para consultar uma interação, inclua outro item."}
               </Text>
             </View>
 
             <AppButton
-              title="Analisar Combinação"
+              title="Analisar seleção"
               onPress={handleConfirm}
               icon={Scan}
               className="flex-1"

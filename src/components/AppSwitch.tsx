@@ -37,7 +37,7 @@ export function AppSwitch({
       easing: Easing.out(Easing.quad),
       useNativeDriver: false,
     }).start();
-  }, [value]);
+  }, [anim, value]);
 
   const translateX = anim.interpolate({
     inputRange: [0, 1],

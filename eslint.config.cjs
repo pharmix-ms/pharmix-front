@@ -13,6 +13,7 @@ module.exports = [
       "dist",
       "build",
       ".expo",
+      "pharmix-test/venv/**",
       "*.config.js",
       "eslint.config.cjs",
     ],
